@@ -51,5 +51,5 @@ if (require.main === module) {
   });
 }
 
-// Export for Testing or Reuse
-module.exports = { app, mongoose };
+// Export the Express app for Vercel
+module.exports = app;
