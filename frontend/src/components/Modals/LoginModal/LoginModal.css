@@ -1,0 +1,17 @@
+.login-container {
+    margin-top: 1rem;
+}
+
+.remember-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-footer-wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    align-items: center;
+}
