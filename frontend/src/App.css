@@ -499,6 +499,50 @@ nav {
   border-top: 2px solid var(--extra-light);
 }
 
+.home {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  background: #2caeba;
+}
+
+.home-banner {
+  text-align: left;
+  padding: 0 3rem;
+}
+
+.home-banner h1 {
+  text-transform: uppercase;
+}
+
+.home-btn-wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  margin-top: 4rem;
+  gap: 1rem;
+}
+
+.home-btn {
+  border: 2px solid #fff;
+  background: transparent;
+  padding: 8px 12px;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+@media screen and (min-width: 768px) {
+  .home {
+    background: linear-gradient(rgb(44, 174, 186, 0.7), rgba(0, 0, 0, 0.9)),
+      url("./assets/images/banner.png") center/cover no-repeat;
+  }
+  .home-banner {
+    padding: 0;
+  }
+}
+
 @media (width < 900px) {
   .nav__links {
     display: none;
@@ -589,7 +633,7 @@ nav {
   }
 }
 
-.nav__icons span a.dropdown-items{
+.nav__icons span a.dropdown-items {
   font-size: 16px;
 }
 
@@ -600,9 +644,9 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .add-product-InputCSS {
-  @apply mt-1 block py-2.5 px-4 w-full rounded-md bg-gray-100 border-gray-300 shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm
+  @apply mt-1 block py-2.5 px-4 w-full rounded-md bg-gray-100 border-gray-300 shadow-sm focus:outline-none focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm;
 }
 
-.add-product-btn{
-  @apply mt-5 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+.add-product-btn {
+  @apply mt-5 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
 }
