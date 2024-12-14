@@ -35,6 +35,9 @@ mongoose
 let db = mongoose.connection;
 db.on("error", console.error.bind(console, "Connection Error"));
 
+app.get("/", (req, res) => {
+  res.send("Server is running!");
+});
 // User Routes
 app.use("/api/users", userRoutes);
 // Package Routes
