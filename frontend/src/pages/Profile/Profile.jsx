@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { FaCopy } from "react-icons/fa";
 import useAuthStore from "../../stores/authStore";
-import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
 import useTransferPointsModalStore from "../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../stores/transferPointsStore";
+import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
 import "./Profile.css";
 
 export default function Profile() {
@@ -116,13 +116,17 @@ export default function Profile() {
     setPageSize(pagination.pageSize);
   };
 
-  const sortedUserPackages = [...userPackages]?.sort(
-    (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-  );
+  const sortedUserPackages = userPackages
+    ? [...userPackages]?.sort(
+        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+      )
+    : [];
 
-  const sortedTransferHistory = [...transferHistory]?.sort(
-    (a, b) => new Date(b.dateTransferred) - new Date(a.dateTransferred)
-  );
+  const sortedTransferHistory = transferHistory
+    ? [...transferHistory]?.sort(
+        (a, b) => new Date(b.dateTransferred) - new Date(a.dateTransferred)
+      )
+    : [];
 
   return (
     <>
@@ -211,7 +215,7 @@ export default function Profile() {
               {error && <p className="text-red-500">{error}</p>}
               {!loading &&
                 !error &&
-                (sortedUserPackages?.length > 0 ? (
+                (sortedUserPackages.length > 0 ? (
                   <div className="table-responsive">
                     <Table
                       dataSource={sortedUserPackages}
@@ -220,7 +224,7 @@ export default function Profile() {
                       pagination={{
                         current: currentPage,
                         pageSize: pageSize,
-                        total: sortedUserPackages?.length,
+                        total: sortedUserPackages.length,
                         showSizeChanger: true,
                         pageSizeOptions: ["10", "20", "50"],
                       }}
@@ -241,7 +245,7 @@ export default function Profile() {
               {transferError && <p className="text-red-500">{transferError}</p>}
               {!transferLoading &&
                 !transferError &&
-                (sortedTransferHistory?.length > 0 ? (
+                (sortedTransferHistory.length > 0 ? (
                   <div className="table-responsive">
                     <Table
                       dataSource={sortedTransferHistory}
@@ -250,7 +254,7 @@ export default function Profile() {
                       pagination={{
                         current: currentPage,
                         pageSize: pageSize,
-                        total: sortedTransferHistory?.length,
+                        total: sortedTransferHistory.length,
                         showSizeChanger: true,
                         pageSizeOptions: ["10", "20", "50"],
                       }}

@@ -313,18 +313,29 @@ export default function Dashboard() {
     setPageSize(pageSize);
   };
 
-  const sortedPackages = [...packages]?.sort(
-    (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-  );
-  const sortedTransferHistory = [...transferHistory]?.sort(
-    (a, b) => new Date(b.dateTransferred) - new Date(a.dateTransferred)
-  );
-  const sortedMembershipLevels = [...membershipLevels]?.sort(
-    (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-  );
-  const sortedAdminUsers = [...allAdminUsers]?.sort(
-    (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-  );
+  const sortedPackages = packages
+    ? [...packages]?.sort(
+        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+      )
+    : [];
+
+  const sortedTransferHistory = transferHistory
+    ? [...transferHistory]?.sort(
+        (a, b) => new Date(b.dateTransferred) - new Date(a.dateTransferred)
+      )
+    : [];
+
+  const sortedMembershipLevels = membershipLevels
+    ? [...membershipLevels]?.sort(
+        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+      )
+    : [];
+
+  const sortedAdminUsers = allAdminUsers
+    ? [...allAdminUsers]?.sort(
+        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+      )
+    : [];
 
   const paginatedPackages = sortedPackages?.slice(
     (currentPage - 1) * pageSize,

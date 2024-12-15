@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import useAuthStore from "../stores/authStore";
 import useLoginModalStore from "../stores/loginModalStore";
 import useRegisterModalStore from "../stores/registerModalStore";
+import logo from "../assets/images/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -125,7 +126,7 @@ export default function Navbar() {
 
         <div className="nav__logo">
           <Link to={"/"}>
-            Gladex<span>.</span>
+            <img alt="logo" src={logo} className="w-16 h-12" />
           </Link>
         </div>
 
