@@ -17,15 +17,27 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin:
-      process.env.CURRENT_ENV === "development"
-        ? process.env.FRONTEND_URL
-        : process.env.FRONTEND_URL_PROD,
+    origin: (origin, callback) => {
+      const allowedOrigin =
+        process.env.CURRENT_ENV === "development"
+          ? process.env.FRONTEND_URL
+          : process.env.FRONTEND_URL_PROD;
+
+      console.log("CORS Origin:", allowedOrigin);
+      console.log("Request Origin:", origin);
+
+      // Allow requests only from the allowed origin
+      if (origin === allowedOrigin || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
-// app.use(cors());
+
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
