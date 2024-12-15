@@ -15,16 +15,17 @@ const port = process.env.PORT || 4000;
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(
-//   cors({
-//     origin:
-//       process.env.CURRENT_ENV === "development"
-//         ? process.env.FRONTEND_URL
-//         : process.env.FRONTEND_URL_PROD,
-//     credentials: true,
-//   })
-// );
-app.use(cors());
+app.use(
+  cors({
+    origin:
+      process.env.CURRENT_ENV === "development"
+        ? process.env.FRONTEND_URL
+        : process.env.FRONTEND_URL_PROD,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
+// app.use(cors());
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
