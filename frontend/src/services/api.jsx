@@ -1,8 +1,12 @@
 import axios from "axios";
 
 // Create an Axios instance
+const env = import.meta.env.VITE_ENV;
 const api = axios.create({
-  baseURL: `${import.meta.env.VITE_BACKEND_URL}/`, 
+  baseURL:
+    env === "development"
+      ? `${import.meta.env.VITE_BACKEND_URL}/`
+      : `${import.meta.env.VITE_BACKEND_URL_PROD}/`,
   headers: {
     "Content-Type": "application/json",
   },
