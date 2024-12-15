@@ -3,10 +3,11 @@ import { useEffect, useState } from "react";
 import { CiEdit } from "react-icons/ci";
 import { FaCopy } from "react-icons/fa";
 import useAuthStore from "../../stores/authStore";
+import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
 import useTransferPointsModalStore from "../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../stores/transferPointsStore";
-import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
+import "./Profile.css";
 
 export default function Profile() {
   const { user } = useAuthStore();
@@ -14,7 +15,11 @@ export default function Profile() {
     useTransactionPackageStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [selectedTab, setSelectedTab] = useState("transactions");
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
+  const fetchMembershipLevel = useAuthStore(
+    (state) => state.fetchMembershipLevel
+  );
 
   const handleTransferPointsModal = useTransferPointsModalStore(
     (state) => state.handleTransferPointsModal
@@ -23,7 +28,6 @@ export default function Profile() {
     (state) => state.handleEditProfilePictureModal
   );
   const { userInfo } = useAuthStore();
-
   const {
     transferHistory,
     fetchTransferHistory,
@@ -36,8 +40,15 @@ export default function Profile() {
       fetchUserPackages(user?.membershipId);
       fetchUserInfo(user?.membershipId);
       fetchTransferHistory(user?.membershipId);
+      fetchMembershipLevel(user?.membershipId);
     }
-  }, [user, fetchUserPackages, fetchUserInfo, fetchTransferHistory]);
+  }, [
+    user,
+    fetchUserPackages,
+    fetchUserInfo,
+    fetchTransferHistory,
+    fetchMembershipLevel,
+  ]);
 
   const packageColumns = [
     {
@@ -67,14 +78,14 @@ export default function Profile() {
 
   const transferColumns = [
     {
-      title: "From Membership ID",
-      dataIndex: "fromMembershipId",
-      key: "fromMembershipId",
-    },
-    {
       title: "To Membership ID",
       dataIndex: "toMembershipId",
       key: "toMembershipId",
+    },
+    {
+      title: "Full Name",
+      dataIndex: "toFullName",
+      key: "toFullName",
     },
     {
       title: "Points Transferred",
@@ -96,7 +107,7 @@ export default function Profile() {
         message.success("Membership ID copied to clipboard");
       })
       .catch((err) => {
-        message.error("Failed to copy Membership ID");
+        message.error("Failed to copy Membership ID", err);
       });
   };
 
@@ -105,9 +116,19 @@ export default function Profile() {
     setPageSize(pagination.pageSize);
   };
 
+  const sortedUserPackages = [...userPackages]?.sort(
+    (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+  );
+
+  const sortedTransferHistory = [...transferHistory]?.sort(
+    (a, b) => new Date(b.dateTransferred) - new Date(a.dateTransferred)
+  );
+
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold">Profile</h1>
+      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
+        Profile
+      </h1>
       <div className="section__container-2">
         <div className="flex flex-col gap-6 md:flex-row justify-around items-center">
           <div className="flex gap-4 items-center relative p-2">
@@ -143,7 +164,7 @@ export default function Profile() {
               <span>My Membership Level</span>
               <img
                 className="h-10 w-32"
-                src={`/vip/${user?.membershipLevel}.png`}
+                src={`/vip/${userInfo?.membershipLevel}.png`}
                 alt="icon"
               />
             </div>
@@ -160,57 +181,87 @@ export default function Profile() {
             Transfer Points
           </button>
         </div>
-        <div>
-          <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-            My Transactions
-          </h2>
-          {loading && <p>Loading transactions...</p>}
-          {error && <p className="text-red-500">{error}</p>}
-          {!loading &&
-            !error &&
-            (userPackages?.length > 0 ? (
-              <Table
-                dataSource={userPackages}
-                columns={packageColumns}
-                rowKey="_id"
-                pagination={{
-                  current: currentPage,
-                  pageSize: pageSize,
-                  total: userPackages.length,
-                  showSizeChanger: true,
-                  pageSizeOptions: ["10", "20", "50"],
-                }}
-                onChange={handleTableChange}
-              />
-            ) : (
-              <Empty description="No Transactions Found" />
-            ))}
+        <div className="flex justify-center">
+          <div className="profile-history-container">
+            <button
+              className={`tab-history-profile ${
+                selectedTab === "transactions" ? "active" : ""
+              }`}
+              onClick={() => setSelectedTab("transactions")}
+            >
+              Transaction History
+            </button>
+            <button
+              className={`tab-history-profile ${
+                selectedTab === "transfers" ? "active" : ""
+              }`}
+              onClick={() => setSelectedTab("transfers")}
+            >
+              Transfer Points History
+            </button>
+          </div>
         </div>
         <div>
-          <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-            My Transfer History
-          </h2>
-          {transferLoading && <p>Loading transfer history...</p>}
-          {transferError && <p className="text-red-500">{transferError}</p>}
-          {!transferLoading &&
-            !transferError &&
-            (transferHistory?.length > 0 ? (
-              <Table
-                dataSource={transferHistory}
-                columns={transferColumns}
-                rowKey="_id"
-                pagination={{
-                  current: currentPage,
-                  pageSize: pageSize,
-                  total: transferHistory.length,
-                  showSizeChanger: true,
-                  pageSizeOptions: ["10", "20", "50"],
-                }}
-                onChange={handleTableChange}
-              />
-            ) : (
-              <Empty description="No Transfer History Found" />
-            ))}
+          {selectedTab === "transactions" && (
+            <>
+              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
+                My Transactions
+              </h2>
+              {loading && <p>Loading transactions...</p>}
+              {error && <p className="text-red-500">{error}</p>}
+              {!loading &&
+                !error &&
+                (sortedUserPackages?.length > 0 ? (
+                  <div className="table-responsive">
+                    <Table
+                      dataSource={sortedUserPackages}
+                      columns={packageColumns}
+                      rowKey="_id"
+                      pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: sortedUserPackages?.length,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "20", "50"],
+                      }}
+                      onChange={handleTableChange}
+                    />
+                  </div>
+                ) : (
+                  <Empty description="No Transactions Found" />
+                ))}
+            </>
+          )}
+          {selectedTab === "transfers" && (
+            <>
+              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
+                My Transfer History
+              </h2>
+              {transferLoading && <p>Loading transfer history...</p>}
+              {transferError && <p className="text-red-500">{transferError}</p>}
+              {!transferLoading &&
+                !transferError &&
+                (sortedTransferHistory?.length > 0 ? (
+                  <div className="table-responsive">
+                    <Table
+                      dataSource={sortedTransferHistory}
+                      columns={transferColumns}
+                      rowKey="_id"
+                      pagination={{
+                        current: currentPage,
+                        pageSize: pageSize,
+                        total: sortedTransferHistory?.length,
+                        showSizeChanger: true,
+                        pageSizeOptions: ["10", "20", "50"],
+                      }}
+                      onChange={handleTableChange}
+                    />
+                  </div>
+                ) : (
+                  <Empty description="No Transfer History Found" />
+                ))}
+            </>
+          )}
         </div>
       </div>
     </>

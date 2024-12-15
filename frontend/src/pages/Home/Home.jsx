@@ -13,7 +13,7 @@ export default function Home() {
   );
   return (
     <>
-      <section className="home" id="home">
+      <section className="home h-screen" id="home">
         <div className="home-banner">
           <h2 className="text-xl md:text-4xl">Welcome To</h2>
           <h1 className="text-3xl md:text-6xl font-bold">Gladex Loyalty Membership</h1>

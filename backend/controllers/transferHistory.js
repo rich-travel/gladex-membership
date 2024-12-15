@@ -91,12 +91,27 @@ const getTransferHistory = async (req, res) => {
     }).sort({ dateTransferred: -1 });
 
     if (history.length === 0) {
-        return res.status(200).json({ message: "No Transfer History found." });
-      }
+      return res.status(200).json({ message: "No Transfer History found." });
+    }
 
-    return res
-      .status(200)
-      .json({ message: "Transfer history retrieved successfully.", history });
+    // Add full name for each toMembershipId
+    const historyWithNames = await Promise.all(
+      history.map(async (transfer) => {
+        const receiver = await User.findOne({
+          membershipId: transfer.toMembershipId,
+        });
+        if (receiver) {
+          transfer = transfer.toObject(); // Convert Mongoose document to plain object
+          transfer.toFullName = `${receiver.firstName} ${receiver.lastName}`;
+        }
+        return transfer;
+      })
+    );
+
+    return res.status(200).json({
+      message: "Transfer history retrieved successfully.",
+      history: historyWithNames,
+    });
   } catch (error) {
     console.error("Error retrieving transfer history:", error);
     return res.status(500).json({

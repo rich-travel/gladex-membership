@@ -19,13 +19,25 @@ export default function Navbar() {
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
 
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const handleDropDown = () => {
     setIsDropDownOpen(!isDropDownOpen);
   };
 
+  const handleResize = () => {
+    setScreenWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const { user } = useAuthStore();
-  const {userInfo} = useAuthStore();
+  const { userInfo } = useAuthStore();
 
   useEffect(() => {
     if (user?.membershipId) {
@@ -44,20 +56,38 @@ export default function Navbar() {
     },
   ];
 
+  if (screenWidth < 900) {
+    adminDropDown.push(
+      {
+        title: "Membership Card",
+        link: "/membership-card",
+      },
+      {
+        title: "Membership Program",
+        link: "/membership-program",
+      }
+    );
+  }
+
   const userDropDown = [
     {
       title: "Profile",
       link: "/profile",
     },
-    {
-      title: "Membership Card",
-      link: "/membership-card",
-    },
-    {
-      title: "Membership Program",
-      link: "/membership-program",
-    },
   ];
+
+  if (screenWidth < 900) {
+    userDropDown.push(
+      {
+        title: "Membership Card",
+        link: "/membership-card",
+      },
+      {
+        title: "Membership Program",
+        link: "/membership-program",
+      }
+    );
+  }
 
   const dropDownMenus = user?.isAdmin ? [...adminDropDown] : [...userDropDown];
 

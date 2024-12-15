@@ -11,7 +11,7 @@ export default function MembershipCard() {
 
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold">
+      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
         Membership Card
       </h1>
       <div className="section__container-2">

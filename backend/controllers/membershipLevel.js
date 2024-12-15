@@ -1,5 +1,4 @@
 const MemberLevel = require("../models/MemberLevel");
-const User = require("../models/User");
 
 // Function to add a membership level to a user
 const addMembershipLevelToUser = async (req, res) => {

@@ -1,7 +1,7 @@
 export default function MembershipProgram() {
   return (
     <section>
-      <h1 className="text-center text-xl md:text-3xl font-bold">
+      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
         GLADEX MEMBERSHIP LOYALTY PROGRAM
       </h1>
       <div className="section__container-2">

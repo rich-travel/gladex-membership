@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const MemberLevel = require("../models/MemberLevel");
 const bcrypt = require("bcrypt");
 const { generateToken } = require("../auth");
 
@@ -308,6 +309,52 @@ const editUserProfile = async (req, res) => {
   }
 };
 
+const getUserMembershipLevel = async (req, res) => {
+  const { membershipId } = req.params;
+
+  try {
+    // Find the user by membershipId
+    const user = await User.findOne({ membershipId });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    // Find all membership levels
+    const membershipLevels = await MemberLevel.find().sort({
+      requirementsAmount: -1,
+    });
+
+    // Determine the user's membership level based on their money
+    let userMembershipLevel = null;
+    for (const level of membershipLevels) {
+      if (user.money >= level.requirementsAmount) {
+        userMembershipLevel = level;
+        user.membershipLevel = userMembershipLevel.membershipLevel;
+        await user.save();
+        break;
+      }
+    }
+
+    if (!userMembershipLevel) {
+      return res.status(200).json({
+        message: "User does not meet the requirements for any membership level.",
+      });
+    }
+
+    return res.status(200).json({
+      message: "You are now a member of this level",
+      membershipLevel: userMembershipLevel,
+    });
+  } catch (error) {
+    console.error("Error retrieving user membership level:", error);
+    return res.status(500).json({
+      message: "Server error. Unable to retrieve user membership level.",
+      error,
+    });
+  }
+};
+
 module.exports = {
   checkEmail,
   registerUser,
@@ -317,4 +364,5 @@ module.exports = {
   updateUserAdmin,
   getUserInfo,
   editUserProfile,
+  getUserMembershipLevel,
 };

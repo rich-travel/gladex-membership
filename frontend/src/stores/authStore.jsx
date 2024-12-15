@@ -8,7 +8,9 @@ const useAuthStore = create(
       user: null,
       token: null,
       isAuthenticated: false,
-      userInfo: null, // Add userInfo state
+      userInfo: null,
+      allAdminUsers: null,
+      getMembershipLevel: null,
 
       // Log in function
       login: async (email, password) => {
@@ -81,9 +83,12 @@ const useAuthStore = create(
       // Edit user profile function
       editUserProfile: async (membershipId, userProfile) => {
         try {
-          const response = await api.put(`/api/users/${membershipId}/edit-profile`, {
-            userProfile,
-          });
+          const response = await api.put(
+            `/api/users/${membershipId}/edit-profile`,
+            {
+              userProfile,
+            }
+          );
           const { user } = response.data;
 
           // Update state
@@ -92,6 +97,32 @@ const useAuthStore = create(
           return user;
         } catch (error) {
           console.error("Editing user profile failed:", error);
+          throw error;
+        }
+      },
+
+      fetchMembershipLevel: async (membershipId) => {
+        try {
+          const response = await api.put(
+            `/api/users/membership-level/${membershipId}`
+          );
+          const { membershipLevel } = response.data;
+          set({ getMembershipLevel: membershipLevel });
+          return membershipLevel;
+        } catch (error) {
+          console.error("Fetching membership level failed:", error);
+          throw error;
+        }
+      },
+
+      fetchAllAdminUsers: async () => {
+        try {
+          const response = await api.get(`/api/users/all-users`);
+          const { users } = response.data;
+          set({ allAdminUsers: users });
+          return users;
+        } catch (error) {
+          console.error("Fetching all admin users failed:", error);
           throw error;
         }
       },

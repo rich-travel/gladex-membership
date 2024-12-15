@@ -13,6 +13,7 @@ const {
   updateUserAdmin,
   getUserInfo,
   editUserProfile,
+  getUserMembershipLevel,
 } = userController;
 
 // Route to check if an email exists
@@ -46,7 +47,7 @@ router.post(
 // Route to get all users (only for admins)
 router.get(
   "/all-users",
-  verifyAdmin, // Middleware to verify if user is admin
+  // verifyAdmin, // Middleware to verify if user is admin
   auditMiddleware("GET_ALL_USERS"), // Log the action
   getAllUsers
 );
@@ -78,5 +79,7 @@ router.put(
   })),
   editUserProfile
 );
+
+router.put("/membership-level/:membershipId", getUserMembershipLevel);
 
 module.exports = router;
