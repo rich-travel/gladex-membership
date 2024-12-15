@@ -18,18 +18,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
-      const allowedOrigin =
-        process.env.CURRENT_ENV === "development"
-          ? process.env.FRONTEND_URL
-          : process.env.FRONTEND_URL_PROD;
+      const allowedOrigins = [
+        process.env.FRONTEND_URL,
+        process.env.FRONTEND_URL_PROD,
+      ];
 
-      console.log("CORS Origin:", allowedOrigin);
       console.log("Request Origin:", origin);
 
-      // Allow requests only from the allowed origin
-      if (origin === allowedOrigin || !origin) {
+      // Allow undefined origins (for tools like Postman) and allowed origins
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
+        console.error("CORS Error: Origin not allowed", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
