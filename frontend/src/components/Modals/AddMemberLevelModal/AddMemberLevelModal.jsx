@@ -40,7 +40,6 @@ export default function AddMemberLevelModal() {
     }
   };
 
-
   return (
     <Modal
       title="Add Membership Level"
@@ -53,7 +52,8 @@ export default function AddMemberLevelModal() {
         onFinish={handleSubmit}
         layout="vertical"
         initialValues={{
-          membershipLevel: membershipLevels?.length + 1,
+          membershipLevel:
+            membershipLevels === undefined ? 1 : membershipLevels?.length + 1,
         }}
       >
         <Form.Item
@@ -118,7 +118,12 @@ export default function AddMemberLevelModal() {
           <ReactQuill theme="snow" />
         </Form.Item>
         <Form.Item>
-          <Button className="btn" type="primary" htmlType="submit" loading={loading}>
+          <Button
+            className="btn"
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+          >
             Add
           </Button>
         </Form.Item>
