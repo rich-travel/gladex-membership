@@ -13,18 +13,22 @@ export default function Home() {
   );
   return (
     <>
-      <section className="home h-screen" id="home">
+      <section className="home h-screen text-white" id="home">
         <div className="home-banner">
           <h2 className="text-xl md:text-4xl">Welcome To</h2>
-          <h1 className="text-3xl md:text-6xl font-bold">Gladex Loyalty Membership</h1>
-          <h3 className="text-lg md:text-2xl">Travel beyond limits with Gladex Membership!</h3>
+          <h1 className="text-3xl md:text-6xl font-bold">
+            Gladex Loyalty Membership
+          </h1>
+          <h3 className="text-lg md:text-2xl mt-2">
+            Travel beyond limits with Gladex Membership!
+          </h3>
           {!user && (
             <div className="home-btn-wrapper">
-              <button onClick={handleRegisterModal} className="home-btn">
-                Not a Member ? Join Now
-              </button>
               <button onClick={handleLoginModal} className="home-btn">
                 Member Login
+              </button>
+              <button onClick={handleRegisterModal} className="home-btn">
+                Not a Member ? Join Now
               </button>
             </div>
           )}

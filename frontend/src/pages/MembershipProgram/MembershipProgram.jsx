@@ -1,15 +1,10 @@
+import ProgramBanner from "./components/ProgramBanner";
+
 export default function MembershipProgram() {
   return (
     <section>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
-        GLADEX MEMBERSHIP LOYALTY PROGRAM
-      </h1>
+      <ProgramBanner />
       <div className="section__container-2">
-        <p className="mb-4">
-          Welcome to the enhanced Gladex Loyalty Membership Program! We've made
-          exciting updates to provide you with more flexibility, rewards, and
-          exclusive benefits.
-        </p>
         <h4 className="font-bold mb-2 text-base md:text-xl">
           Membership Tiers:
         </h4>
@@ -20,9 +15,7 @@ export default function MembershipProgram() {
           <ul>
             <li>Entry Requirement: Spend Php 30,000 on travel packages</li>
             <li>Earn 1 point for every Php 50 spent on Travel packages</li>
-            <li>
-              Transfer points to family or friends annually with a small fee
-            </li>
+            <li>Transfer points to family or friends with a small fee</li>
             <li className="mb-4">
               Redemption: Use points for flights, hotel stays, tours, and more
             </li>

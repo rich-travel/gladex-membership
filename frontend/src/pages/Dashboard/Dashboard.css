@@ -3,12 +3,11 @@
 }
 
 .dashboard-history-container {
-  background: #eff3ff;
+  background: #d9d9d9;
   border-radius: 8px;
-  display: inline-flex;
-  justify-content: center;
   margin-top: 10px;
   padding: 10px;
+  font-weight: 600;
 }
 
 .tab-history-dashboard {
@@ -21,8 +20,8 @@
 }
 
 .tab-history-dashboard.active {
-  color: #2e5cfd;
-  border-bottom: 4px solid #2e5cfd;
+  color: var(--primary-color);;
+  border-bottom: 4px solid var(--primary-color);;
   font-weight: 900;
 }
 

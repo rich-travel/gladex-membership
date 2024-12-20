@@ -2,38 +2,16 @@
   padding: 20px;
 }
 
-.tabs {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.tab {
-  padding: 10px 20px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  margin: 0 5px;
-  background-color: #f9f9f9;
-}
-
-.tab.active {
-  background-color: #007bff;
-  color: white;
-  border-color: #007bff;
-}
-
 .table-responsive {
   overflow-x: auto;
 }
 
 .profile-history-container {
-  background: #eff3ff;
+  background: #DCDBDB;
   border-radius: 8px;
-  display: inline-flex;
-  justify-content: center;
   margin-top: 10px;
   padding: 10px;
+  margin-bottom: 10px;
 }
 
 .tab-history-profile {
@@ -46,23 +24,34 @@
 }
 
 .tab-history-profile.active {
-  color: #2e5cfd;
-  border-bottom: 4px solid #2e5cfd;
+  color: var(--primary-color);;
+  border-bottom: 4px solid var(--primary-color);;
   font-weight: 900;
+}
+
+.left-section {
+  width: 100%;
+}
+
+.right-section {
+  width: 100%;
+}
+
+@media screen and (min-width: 768px) {
+  .left-section {
+    width: 30%;
+  }
+
+  .right-section {
+    width: 70%;
+  }
 }
 
 @media (max-width: 768px) {
   .section__container-2 {
     padding: 10px;
   }
-
-  .tabs {
-    flex-direction: column;
-  }
-
-  .tab {
-    margin-bottom: 10px;
-  }
+  
 }
 
 @media (max-width: 500px) {

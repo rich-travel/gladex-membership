@@ -13,7 +13,12 @@ export default function AddMemberLevelModal() {
   const handleMemberhipLevelModal = useMembershipLevelModalStore(
     (state) => state.handleMemberhipLevelModal
   );
-  const { addMembershipLevel, loading } = useMembershipLevelStore();
+  const {
+    addMembershipLevel,
+    loading,
+    fetchAllMembershipLevels,
+    membershipLevels,
+  } = useMembershipLevelStore();
 
   const handleSubmit = async (values) => {
     try {
@@ -24,6 +29,7 @@ export default function AddMemberLevelModal() {
         text: "Membership level added successfully.",
       });
       handleMemberhipLevelModal();
+      fetchAllMembershipLevels();
       form.resetFields();
     } catch (error) {
       Swal.fire({
@@ -34,6 +40,8 @@ export default function AddMemberLevelModal() {
     }
   };
 
+  console.log(membershipLevels?.length);
+
   return (
     <Modal
       title="Add Membership Level"
@@ -41,7 +49,14 @@ export default function AddMemberLevelModal() {
       open={membershipLevelModal}
       onCancel={handleMemberhipLevelModal}
     >
-      <Form form={form} onFinish={handleSubmit} layout="vertical">
+      <Form
+        form={form}
+        onFinish={handleSubmit}
+        layout="vertical"
+        initialValues={{
+          membershipLevel: membershipLevels?.length + 1,
+        }}
+      >
         <Form.Item
           label="Membership Name"
           name="membershipName"
@@ -58,7 +73,7 @@ export default function AddMemberLevelModal() {
             { required: true, message: "Please input the membership level!" },
           ]}
         >
-          <Input type="number" />
+          <Input type="number" disabled />
         </Form.Item>
         <Form.Item
           label="Requirements Amount"
@@ -73,6 +88,30 @@ export default function AddMemberLevelModal() {
           <Input type="number" />
         </Form.Item>
         <Form.Item
+          label="Base Points"
+          name="basePoints"
+          rules={[
+            {
+              required: true,
+              message: "Please input the requirements base points amount!",
+            },
+          ]}
+        >
+          <Input type="number" />
+        </Form.Item>
+        <Form.Item
+          label="Transfer Fee Amount"
+          name="transferFee"
+          rules={[
+            {
+              required: true,
+              message: "Please input the requirements transfer fee amount!",
+            },
+          ]}
+        >
+          <Input type="number" />
+        </Form.Item>
+        <Form.Item
           label="Benefits"
           name="benefits"
           rules={[{ required: true, message: "Please input the benefits!" }]}
@@ -80,7 +119,7 @@ export default function AddMemberLevelModal() {
           <ReactQuill theme="snow" />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button className="btn" type="primary" htmlType="submit" loading={loading}>
             Add
           </Button>
         </Form.Item>

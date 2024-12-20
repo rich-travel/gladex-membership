@@ -62,7 +62,7 @@ export default function LoginModal() {
     >
       <section>
         <div className="login-container">
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>Login</h3>
+          <h3 className="text-center mb-3 font-bold text-lg">Login</h3>
           <Form
             name="normal_login"
             initialValues={{
@@ -119,7 +119,7 @@ export default function LoginModal() {
               </div>
             </Form.Item> */}
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button block="true" type="primary" htmlType="submit">
+              <Button className="btn" block="true" type="primary" htmlType="submit">
                 Log in
               </Button>
               <div className="login-footer-wrapper">

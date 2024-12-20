@@ -14,6 +14,10 @@ const transferHistorySchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  transferFee: {
+    type: Number,
+    required: true,
+  },
   dateTransferred: {
     type: Date,
     default: Date.now,

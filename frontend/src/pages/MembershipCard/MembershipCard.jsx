@@ -11,7 +11,7 @@ export default function MembershipCard() {
 
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
+      <h1 className="text-center text-xl md:text-3xl font-bold mt-4">
         Membership Card
       </h1>
       <div className="section__container-2">
@@ -22,8 +22,15 @@ export default function MembershipCard() {
             {membershipLevels.map((level) => (
               <div
                 key={level._id}
-                className="bg-white shadow-md rounded-lg p-4"
+                className="bg-white shadow-lg rounded-3xl p-4"
               >
+                <div className="flex justify-center">
+                  <img
+                    src={`/card/${level?.membershipLevel}.png`}
+                    alt="card icon"
+                    className="card-img"
+                  />
+                </div>
                 <h2 className="text-lg font-bold mb-2">
                   {level.membershipName}
                 </h2>
@@ -35,9 +42,7 @@ export default function MembershipCard() {
                 </p>
                 <p className="text-sm mb-1">
                   <strong>Benefits:</strong>
-                  <div
-                    dangerouslySetInnerHTML={{ __html: level?.benefits }}
-                  />
+                  <div dangerouslySetInnerHTML={{ __html: level?.benefits }} />
                 </p>
                 <p className="text-sm text-gray-500">
                   <strong>Date Created:</strong>{" "}

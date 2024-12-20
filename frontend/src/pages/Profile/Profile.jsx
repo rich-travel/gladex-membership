@@ -1,6 +1,6 @@
 import { Empty, message, Table } from "antd";
 import { useEffect, useState } from "react";
-import { CiEdit } from "react-icons/ci";
+import { FiEdit } from "react-icons/fi";
 import { FaCopy } from "react-icons/fa";
 import useAuthStore from "../../stores/authStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
@@ -93,6 +93,11 @@ export default function Profile() {
       key: "pointsTransferred",
     },
     {
+      title: "Transfer Fee",
+      dataIndex: "transferFee",
+      key: "transferFee",
+    },
+    {
       title: "Date Transferred",
       dataIndex: "dateTransferred",
       key: "dateTransferred",
@@ -130,24 +135,24 @@ export default function Profile() {
 
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
+      <h1 className="text-center text-xl md:text-3xl font-bold mt-4">
         Profile
       </h1>
       <div className="section__container-2">
         <div className="flex flex-col gap-6 md:flex-row justify-around items-center">
           <div className="flex gap-4 items-center relative p-2">
             <div
-              className="absolute -left-1 bottom-1 text-2xl cursor-pointer"
+              className="absolute -left-1 bottom-2 text-1xl cursor-pointer"
               onClick={handleEditProfilePictureModal}
             >
-              <CiEdit />
+              <FiEdit />
             </div>
             <img
               className="w-24 h-24 rounded-full"
               src={`/avatar/${userInfo?.userProfile}.png`}
               alt="icon"
             />
-            <div className="flex flex-col text-sm md:text-lg">
+            <div className="flex flex-col text-sm md:text-lg font-semibold">
               <span className="flex items-center gap-2">
                 {userInfo?.membershipId}{" "}
                 <span
@@ -163,109 +168,109 @@ export default function Profile() {
               <span>{userInfo?.email}</span>
             </div>
           </div>
-          <div className="flex justify-around gap-6">
+          <div className="my-4">
+            <button onClick={handleTransferPointsModal} className="btn">
+              Transfer Points
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col md:flex-row md:justify-center md:items-baseline gap-6">
+          <div className="left-section flex justify-around gap-6 flex-col">
             <div className="flex flex-col items-center gap-2">
-              <span>My Membership Level</span>
+              <span className="font-semibold">My Membership Level</span>
               <img
-                className="h-10 w-32"
+                className="w-52 h-36"
                 src={`/vip/${userInfo?.membershipLevel}.png`}
                 alt="icon"
               />
             </div>
             <div className="flex flex-col items-center gap-2">
-              <span>My Total Points</span>
-              <span className="text-xl md:text-3xl font-bold">
+              <span className="font-semibold">My Total Points</span>
+              <span className="text-1xl md:text-4xl font-bold">
                 {userInfo?.points}
               </span>
             </div>
           </div>
-        </div>
-        <div className="my-4">
-          <button onClick={handleTransferPointsModal} className="btn">
-            Transfer Points
-          </button>
-        </div>
-        <div className="flex justify-center">
-          <div className="profile-history-container">
-            <button
-              className={`tab-history-profile ${
-                selectedTab === "transactions" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("transactions")}
-            >
-              Transaction History
-            </button>
-            <button
-              className={`tab-history-profile ${
-                selectedTab === "transfers" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("transfers")}
-            >
-              Transfer Points History
-            </button>
+          <div className="right-section">
+            <div className="flex justify-center">
+              <div className="profile-history-container w-full flex justify-around gap-4 font-bold">
+                <button
+                  className={`tab-history-profile ${
+                    selectedTab === "transactions" ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedTab("transactions")}
+                >
+                  Transaction History
+                </button>
+                <button
+                  className={`tab-history-profile ${
+                    selectedTab === "transfers" ? "active" : ""
+                  }`}
+                  onClick={() => setSelectedTab("transfers")}
+                >
+                  Transfer Points History
+                </button>
+              </div>
+            </div>
+            <div>
+              {selectedTab === "transactions" && (
+                <>
+                  {loading && <p>Loading transactions...</p>}
+                  {error && <p className="text-red-500">{error}</p>}
+                  {!loading &&
+                    !error &&
+                    (sortedUserPackages.length > 0 ? (
+                      <div className="table-responsive">
+                        <Table
+                          dataSource={sortedUserPackages}
+                          columns={packageColumns}
+                          rowKey="_id"
+                          pagination={{
+                            current: currentPage,
+                            pageSize: pageSize,
+                            total: sortedUserPackages.length,
+                            showSizeChanger: true,
+                            pageSizeOptions: ["10", "20", "50"],
+                          }}
+                          onChange={handleTableChange}
+                        />
+                      </div>
+                    ) : (
+                      <Empty description="No Transactions Found" />
+                    ))}
+                </>
+              )}
+              {selectedTab === "transfers" && (
+                <>
+                  {transferLoading && <p>Loading transfer history...</p>}
+                  {transferError && (
+                    <p className="text-red-500">{transferError}</p>
+                  )}
+                  {!transferLoading &&
+                    !transferError &&
+                    (sortedTransferHistory?.length > 0 ? (
+                      <div className="table-responsive">
+                        <Table
+                          dataSource={sortedTransferHistory}
+                          columns={transferColumns}
+                          rowKey="_id"
+                          pagination={{
+                            current: currentPage,
+                            pageSize: pageSize,
+                            total: sortedTransferHistory?.length,
+                            showSizeChanger: true,
+                            pageSizeOptions: ["10", "20", "50"],
+                          }}
+                          onChange={handleTableChange}
+                        />
+                      </div>
+                    ) : (
+                      <Empty description="No Transfer History Found" />
+                    ))}
+                </>
+              )}
+            </div>
           </div>
-        </div>
-        <div>
-          {selectedTab === "transactions" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                My Transactions
-              </h2>
-              {loading && <p>Loading transactions...</p>}
-              {error && <p className="text-red-500">{error}</p>}
-              {!loading &&
-                !error &&
-                (sortedUserPackages.length > 0 ? (
-                  <div className="table-responsive">
-                    <Table
-                      dataSource={sortedUserPackages}
-                      columns={packageColumns}
-                      rowKey="_id"
-                      pagination={{
-                        current: currentPage,
-                        pageSize: pageSize,
-                        total: sortedUserPackages.length,
-                        showSizeChanger: true,
-                        pageSizeOptions: ["10", "20", "50"],
-                      }}
-                      onChange={handleTableChange}
-                    />
-                  </div>
-                ) : (
-                  <Empty description="No Transactions Found" />
-                ))}
-            </>
-          )}
-          {selectedTab === "transfers" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                My Transfer History
-              </h2>
-              {transferLoading && <p>Loading transfer history...</p>}
-              {transferError && <p className="text-red-500">{transferError}</p>}
-              {!transferLoading &&
-                !transferError &&
-                (sortedTransferHistory.length > 0 ? (
-                  <div className="table-responsive">
-                    <Table
-                      dataSource={sortedTransferHistory}
-                      columns={transferColumns}
-                      rowKey="_id"
-                      pagination={{
-                        current: currentPage,
-                        pageSize: pageSize,
-                        total: sortedTransferHistory.length,
-                        showSizeChanger: true,
-                        pageSizeOptions: ["10", "20", "50"],
-                      }}
-                      onChange={handleTableChange}
-                    />
-                  </div>
-                ) : (
-                  <Empty description="No Transfer History Found" />
-                ))}
-            </>
-          )}
         </div>
       </div>
     </>

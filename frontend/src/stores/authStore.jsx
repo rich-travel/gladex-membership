@@ -10,7 +10,9 @@ const useAuthStore = create(
       isAuthenticated: false,
       userInfo: null,
       allAdminUsers: null,
+      allMemberUsers: null,
       getMembershipLevel: null,
+      transferFee: null,
 
       // Log in function
       login: async (email, password) => {
@@ -20,8 +22,8 @@ const useAuthStore = create(
             password,
           });
           const { token, user } = response;
+          await get().fetchMembershipLevel(user.membershipId);
 
-          // Update state
           set({ user, token, isAuthenticated: true });
 
           return response;
@@ -115,14 +117,16 @@ const useAuthStore = create(
         }
       },
 
-      fetchAllAdminUsers: async () => {
+      fetchAllUsers: async () => {
         try {
           const response = await api.get(`/api/users/all-users`);
           const { users } = response.data;
-          set({ allAdminUsers: users });
+          const adminUsers = users.filter((user) => user.isAdmin);
+          const memberUsers = users.filter((user) => !user.isAdmin);
+          set({ allAdminUsers: adminUsers, allMemberUsers: memberUsers });
           return users;
         } catch (error) {
-          console.error("Fetching all admin users failed:", error);
+          console.error("Fetching all users failed:", error);
           throw error;
         }
       },

@@ -1,9 +1,10 @@
 import { UserOutlined } from "@ant-design/icons";
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, Modal, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { IoPricetagOutline } from "react-icons/io5";
 import { LuPackageX } from "react-icons/lu";
 import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
 import useTransactionModalStore from "../../../stores/transactionModalStore";
 import useTransactionPackageStore from "../../../stores/transactionPackageStore";
 
@@ -33,6 +34,40 @@ export default function TransactionModal() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleFileUpload = (file) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      // Assuming the first row contains headers and the second row contains data
+      const [headers, values] = json;
+      const dataObject = headers.reduce((obj, header, index) => {
+        obj[header] = values[index];
+        return obj;
+      }, {});
+
+      console.log("Data Object:", dataObject);
+
+      setTransactionPayload({
+        membershipId: dataObject["membershipId"] || "",
+        packageAvailed: dataObject["packageAvailed"] || "",
+        packagePrice: dataObject["packagePrice"] || "",
+      });
+
+      form.setFieldsValue({
+        membershipId: dataObject["membershipId"] || "",
+        packageAvailed: dataObject["packageAvailed"] || "",
+        packagePrice: dataObject["packagePrice"] || "",
+      });
+    };
+    reader.readAsArrayBuffer(file);
+    return false; // Prevent default upload behavior
   };
 
   const handleSubmit = async () => {
@@ -71,7 +106,7 @@ export default function TransactionModal() {
     >
       <section>
         <div className="transaction-container">
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
+          <h3 className="text-center mb-3 font-bold text-lg">
             Transaction
           </h3>
           <Form
@@ -84,6 +119,17 @@ export default function TransactionModal() {
             layout="vertical"
             requiredMark="optional"
           >
+            {/* File Upload */}
+            <Form.Item label="Upload Excel File">
+              <Upload
+                beforeUpload={handleFileUpload}
+                accept=".xlsx, .xls"
+                showUploadList={false}
+              >
+                <Button>Upload Excel File</Button>
+              </Upload>
+            </Form.Item>
+
             {/* Membership ID */}
             <Form.Item
               label="Membership ID"
@@ -145,7 +191,7 @@ export default function TransactionModal() {
             </Form.Item>
 
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button block type="primary" htmlType="submit">
+              <Button className="btn" block type="primary" htmlType="submit">
                 Submit
               </Button>
             </Form.Item>

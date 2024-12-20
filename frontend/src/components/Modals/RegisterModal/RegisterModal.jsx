@@ -91,7 +91,7 @@ export default function RegisterModal() {
     >
       <section>
         <div className="login-container">
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>Sign up</h3>
+          <h3 className="text-center mb-3 font-bold text-lg">Sign up</h3>
           <Form
             form={form}
             name="normal_register"
@@ -237,7 +237,7 @@ export default function RegisterModal() {
             </Form.Item>
 
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button block type="primary" htmlType="submit">
+              <Button className="btn" block type="primary" htmlType="submit">
                 Sign up
               </Button>
               <div className="login-footer-wrapper">

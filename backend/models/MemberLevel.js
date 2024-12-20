@@ -18,6 +18,14 @@ const memberLevelSchema = mongoose.Schema({
     type: String, 
     required: true,
   },
+  basePoints: {
+    type: Number,
+    required: true,
+  },
+  transferFee:{
+    type: Number,
+    required: true,
+  },
   dateCreated: {
     type: Date,
     default: Date.now,

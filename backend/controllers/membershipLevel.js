@@ -2,8 +2,14 @@ const MemberLevel = require("../models/MemberLevel");
 
 // Function to add a membership level to a user
 const addMembershipLevelToUser = async (req, res) => {
-  const { membershipName, membershipLevel, requirementsAmount, benefits } =
-    req.body;
+  const {
+    membershipName,
+    membershipLevel,
+    requirementsAmount,
+    benefits,
+    basePoints,
+    transferFee,
+  } = req.body;
 
   if (!membershipLevel) {
     return res.status(400).json({ message: "Membership level is required." });
@@ -13,9 +19,11 @@ const addMembershipLevelToUser = async (req, res) => {
     // Create a new membership level
     const newMemberLevel = new MemberLevel({
       membershipName,
-      membershipLevel,
-      requirementsAmount,
+      membershipLevel: Number(membershipLevel),
+      requirementsAmount: Number(requirementsAmount),
       benefits,
+      basePoints: Number(basePoints),
+      transferFee: Number(transferFee),
     });
 
     // Save the membership level

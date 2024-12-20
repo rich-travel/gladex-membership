@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const TransferHistory = require("../models/TransferHistory");
+const MemberLevel = require("../models/MemberLevel");
 
 const transferPoints = async (req, res) => {
   const { fromMembershipId, toMembershipId, points } = req.body;
@@ -21,12 +22,25 @@ const transferPoints = async (req, res) => {
       return res.status(404).json({ message: "Receiver not found." });
     }
 
-    if (sender.points < points) {
+    if (sender.membershipId === receiver.membershipId) {
+      return res.status(400).json({ message: "Cannot transfer points to self." });
+    }
+
+    // Find the transfer fee based on the sender's membership level
+    const memberLevel = await MemberLevel.findOne({ membershipLevel: sender.membershipLevel });
+
+    if (!memberLevel) {
+      return res.status(404).json({ message: "Membership level not found." });
+    }
+
+    const transferFee = memberLevel.transferFee;
+
+    if (sender.points < (Number(points) + transferFee)) {
       return res.status(400).json({ message: "Insufficient points." });
     }
 
     // Transfer points
-    sender.points -= Number(points);
+    sender.points -= (Number(points) + transferFee);
     receiver.points += Number(points);
 
     // Save the updated users
@@ -38,18 +52,15 @@ const transferPoints = async (req, res) => {
       fromMembershipId,
       toMembershipId,
       pointsTransferred: Number(points),
+      transferFee: transferFee,
     });
 
     await transferHistory.save();
 
-    return res
-      .status(200)
-      .json({ message: "Points transferred successfully." });
+    return res.status(200).json({ message: "Points transferred successfully." });
   } catch (error) {
     console.error("Error transferring points:", error);
-    return res
-      .status(500)
-      .json({ message: "Server error. Unable to transfer points.", error });
+    return res.status(500).json({ message: "Server error. Unable to transfer points.", error });
   }
 };
 

@@ -60,7 +60,7 @@ export default function EditProfilePicture() {
     >
       <section>
         <div className="change-admin-container">
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
+          <h3 className="text-center mb-3 font-bold text-lg">
             Edit Profile Picture
           </h3>
           <div className="flex flex-wrap gap-4 justify-center">

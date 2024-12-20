@@ -298,6 +298,7 @@ const editUserProfile = async (req, res) => {
         email: user.email,
         isAdmin: user.isAdmin,
         userProfile: user.userProfile,
+        membershipLevel: user.membershipLevel,
       },
     });
   } catch (error) {

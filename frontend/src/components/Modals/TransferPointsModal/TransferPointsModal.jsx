@@ -1,14 +1,18 @@
-import { UserOutlined, DollarOutlined } from "@ant-design/icons";
+import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal } from "antd";
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import useTransferPointsModalStore from "../../../stores/transferPointsModalStore";
 import useAuthStore from "../../../stores/authStore";
+import useTransferPointsModalStore from "../../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../../stores/transferPointsStore";
+import { FaRegImage } from "react-icons/fa6";
+import { BiQrScan } from "react-icons/bi";
+import QRCode from "react-qr-code";
+import QrScanner from "react-qr-scanner";
 
 export default function TransferPointsModal() {
   const [form] = Form.useForm();
-  const { user } = useAuthStore();
+  const { userInfo, getMembershipLevel } = useAuthStore();
   const transferPointsModal = useTransferPointsModalStore(
     (state) => state.transferPointsModal
   );
@@ -16,23 +20,28 @@ export default function TransferPointsModal() {
     (state) => state.handleTransferPointsModal
   );
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
-  const { transferPoints, loading, error } = useTransferPointsStore();
+  const { transferPoints, loading } = useTransferPointsStore();
+
+  const [showQrReader, setShowQrReader] = useState(false);
+  const [showMyQr, setShowMyQr] = useState(false);
+  const [pointsToAdd, setPointsToAdd] = useState("");
 
   const [transferPointsPayload, setTransferPointsPayload] = useState({
-    fromMembershipId: user?.membershipId,
+    fromMembershipId: userInfo?.membershipId,
     toMembershipId: "",
     points: "",
+    transferFee: getMembershipLevel?.transferFee,
   });
 
-  const { fetchTransferHistory} = useTransferPointsStore();
+  const { fetchTransferHistory } = useTransferPointsStore();
 
   useEffect(() => {
     setTransferPointsPayload((prev) => ({
       ...prev,
-      fromMembershipId: user?.membershipId,
+      fromMembershipId: userInfo?.membershipId,
     }));
-    form.setFieldsValue({ fromMembershipId: user?.membershipId });
-  }, [user, form]);
+    form.setFieldsValue({ fromMembershipId: userInfo?.membershipId });
+  }, [userInfo, form]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +49,44 @@ export default function TransferPointsModal() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleQrScan = (data) => {
+    if (data) {
+      const parsedData = JSON.parse(data);
+      setTransferPointsPayload((prev) => ({
+        ...prev,
+        toMembershipId: parsedData.membershipId || "",
+        points: parsedData.points || "",
+      }));
+      form.setFieldsValue({
+        toMembershipId: parsedData.membershipId || "",
+        points: parsedData.points || "",
+      });
+      setShowQrReader(false);
+    }
+  };
+
+  const handleQrError = (err) => {
+    console.error(err);
+    Swal.fire({
+      icon: "error",
+      title: "QR Scan Failed",
+      text: err.message,
+    });
+  };
+
+  const handleShowMyQr = () => {
+    setShowMyQr(true);
+  };
+
+  const handleAddPoints = () => {
+    setTransferPointsPayload((prev) => ({
+      ...prev,
+      points: pointsToAdd,
+    }));
+    form.setFieldsValue({ points: pointsToAdd });
+    setShowMyQr(false);
   };
 
   const handleSubmit = async () => {
@@ -55,12 +102,12 @@ export default function TransferPointsModal() {
         title: "Success",
         text: "Points transferred successfully.",
       });
-      fetchUserInfo(user?.membershipId);
-      fetchTransferHistory(user?.membershipId);
+      fetchUserInfo(userInfo?.membershipId);
+      fetchTransferHistory(userInfo?.membershipId);
       handleTransferPointsModal();
       form.resetFields(); // Reset the form fields
       setTransferPointsPayload({
-        fromMembershipId: user?.membershipId,
+        fromMembershipId: userInfo?.membershipId,
         toMembershipId: "",
         points: "",
       });
@@ -82,14 +129,61 @@ export default function TransferPointsModal() {
     >
       <section>
         <div className="change-admin-container">
-          <h3 style={{ textAlign: "center", marginBottom: "10px" }}>
+          <h3 className="text-center mb-3 font-bold text-lg">
             Transfer Points
           </h3>
+          {/* <div className="flex justify-around mb-4">
+            <div
+              className="flex flex-col items-center p-3 cursor-pointer font-semibold"
+              onClick={() => setShowQrReader(true)}
+            >
+              <FaRegImage className="text-xl" />
+              <span>Upload QR</span>
+            </div>
+            <div
+              className="flex flex-col items-center p-3 cursor-pointer font-semibold"
+              onClick={handleShowMyQr}
+            >
+              <BiQrScan className="text-xl" />
+              <span>Show My QR</span>
+            </div>
+          </div>
+          {showQrReader && (
+            <div className="relative">
+              <QrScanner
+                delay={300}
+                onError={handleQrError}
+                onScan={handleQrScan}
+                style={{ width: "100%" }}
+              />
+              <Button
+                className="absolute top-0 right-0 m-2"
+                onClick={() => setShowQrReader(false)}
+              >
+                Close
+              </Button>
+            </div>
+          )}
+          {showMyQr && (
+            <div className="flex flex-col items-center mb-4">
+              <QRCode value={JSON.stringify({ membershipId: userInfo?.membershipId })} />
+              <Input
+                className="mt-2"
+                placeholder="Enter points to add"
+                value={pointsToAdd}
+                onChange={(e) => setPointsToAdd(e.target.value)}
+              />
+              <Button className="mt-2" onClick={handleAddPoints}>
+                Add Points
+              </Button>
+            </div>
+          )} */}
           <Form
             form={form}
             name="transfer_points"
             initialValues={{
-              fromMembershipId: user?.membershipId,
+              fromMembershipId: userInfo?.membershipId,
+              transferFee: getMembershipLevel?.transferFee,
             }}
             onFinish={handleSubmit}
             layout="vertical"
@@ -132,6 +226,24 @@ export default function TransferPointsModal() {
               />
             </Form.Item>
             <Form.Item
+              label="Transfer Fee"
+              name="transferFee"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input
+                prefix={<DollarOutlined />}
+                placeholder={transferPointsPayload.transferFee}
+                name="transferFee"
+                value={transferPointsPayload.transferFee}
+                onChange={handleChange}
+                disabled
+              />
+            </Form.Item>
+            <Form.Item
               label="Points"
               name="points"
               rules={[
@@ -150,7 +262,7 @@ export default function TransferPointsModal() {
               />
             </Form.Item>
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button block type="primary" htmlType="submit" loading={loading}>
+              <Button className="btn" block type="primary" htmlType="submit" loading={loading}>
                 Submit
               </Button>
             </Form.Item>

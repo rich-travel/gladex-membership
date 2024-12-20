@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { CiLogin } from "react-icons/ci";
-import { PiUserLight } from "react-icons/pi";
+import { IoIosLogIn } from "react-icons/io";
+import { FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import useAuthStore from "../stores/authStore";
 import useLoginModalStore from "../stores/loginModalStore";
 import useRegisterModalStore from "../stores/registerModalStore";
 import logo from "../assets/images/logo.png";
+import useMyQrCodeModalStore from "../stores/myQrCodeModalStore";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -46,6 +47,10 @@ export default function Navbar() {
     }
   }, [user, fetchUserInfo]);
 
+  const handleQrCodeModal = useMyQrCodeModalStore(
+    (state) => state.handleQrCodeModal
+  );
+
   const adminDropDown = [
     {
       title: "Dashboard",
@@ -54,6 +59,10 @@ export default function Navbar() {
     {
       title: "Profile",
       link: "/profile",
+    },
+    {
+      title: "My QR Code",
+      onClick: handleQrCodeModal,
     },
   ];
 
@@ -74,6 +83,10 @@ export default function Navbar() {
     {
       title: "Profile",
       link: "/profile",
+    },
+    {
+      title: "My QR Code",
+      onClick: handleQrCodeModal,
     },
   ];
 
@@ -110,8 +123,13 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed-nav-bar w-nav shadow-lg">
-      <nav className="max-w-screen-2xl mx-auto px-4 flex justify-between items-center">
+    <header className="fixed-nav-bar w-nav">
+      <nav className="max-w-screen-2xl mx-auto px-4 flex justify-center items-center">
+        <div className="nav__logo">
+          <Link to={"/"}>
+            <img alt="logo" src={logo} className="w-16 h-12" />
+          </Link>
+        </div>
         <ul className="nav__links">
           <li className="link">
             <Link to={"/"}>Home</Link>
@@ -124,12 +142,6 @@ export default function Navbar() {
           </li>
         </ul>
 
-        <div className="nav__logo">
-          <Link to={"/"}>
-            <img alt="logo" src={logo} className="w-16 h-12" />
-          </Link>
-        </div>
-
         <div className="nav__icons relative">
           {(!user || user === null) && (
             <>
@@ -137,19 +149,19 @@ export default function Navbar() {
                 className="cursor-pointer text-2xl"
                 onClick={handleLoginModal}
               >
-                <CiLogin />
+                <IoIosLogIn style={{color: "#73716F"}} />
               </span>
               <span
                 className="cursor-pointer text-2xl"
                 onClick={handleRegisterModal}
               >
-                <PiUserLight />
+                <FaUser style={{color: "#73716F"}} />
               </span>
             </>
           )}
           {user && (
             <>
-              <span className="cursor-pointer" onClick={handleDropDown}>
+              <span className="cursor-pointer mr-4 md:mr-10" onClick={handleDropDown}>
                 <img
                   className="w-8 h-8 rounded-full"
                   src={`/avatar/${userInfo?.userProfile}.png`}
@@ -160,13 +172,25 @@ export default function Navbar() {
                     <ul className="font-medium space-y-4 p-2">
                       {dropDownMenus.map((item, index) => (
                         <li key={index}>
-                          <Link
-                            onClick={() => setIsDropDownOpen(false)}
-                            className="dropdown-items"
-                            to={item.link}
-                          >
-                            {item.title}
-                          </Link>
+                          {item.link ? (
+                            <Link
+                              onClick={() => setIsDropDownOpen(false)}
+                              className="dropdown-items"
+                              to={item.link}
+                            >
+                              {item.title}
+                            </Link>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setIsDropDownOpen(false);
+                                item.onClick();
+                              }}
+                              className="dropdown-items"
+                            >
+                              {item.title}
+                            </button>
+                          )}
                         </li>
                       ))}
                       <li>

@@ -38,7 +38,7 @@ export default function Dashboard() {
     loading: membershipLoading,
     error: membershipError,
   } = useMembershipLevelStore();
-  const { fetchAllAdminUsers, allAdminUsers } = useAuthStore();
+  const { fetchAllUsers, allAdminUsers, allMemberUsers } = useAuthStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
@@ -50,12 +50,12 @@ export default function Dashboard() {
     fetchAllPackages();
     fetchAllTransferHistory();
     fetchAllMembershipLevels();
-    fetchAllAdminUsers();
+    fetchAllUsers();
   }, [
     fetchAllPackages,
     fetchAllTransferHistory,
     fetchAllMembershipLevels,
-    fetchAllAdminUsers,
+    fetchAllUsers,
   ]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
@@ -235,6 +235,12 @@ export default function Dashboard() {
       ...getColumnSearchProps("pointsTransferred"),
     },
     {
+      title: "Transfer Fee",
+      dataIndex: "transferFee",
+      key: "transferFee",
+      ...getColumnSearchProps("transferFee"),
+    },
+    {
       title: "Date Transferred",
       dataIndex: "dateTransferred",
       key: "dateTransferred",
@@ -260,6 +266,12 @@ export default function Dashboard() {
       dataIndex: "requirementsAmount",
       key: "requirementsAmount",
       ...getColumnSearchProps("requirementsAmount"),
+    },
+    {
+      title: "Transfer Fee",
+      dataIndex: "transferFee",
+      key: "transferFee",
+      ...getColumnSearchProps("transferFee"),
     },
     {
       title: "Benefits",
@@ -336,6 +348,11 @@ export default function Dashboard() {
         (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
       )
     : [];
+  const sortedMemberUsers = allMemberUsers
+    ? [...allMemberUsers]?.sort(
+        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
+      )
+    : [];
 
   const paginatedPackages = sortedPackages?.slice(
     (currentPage - 1) * pageSize,
@@ -357,9 +374,14 @@ export default function Dashboard() {
     currentPage * pageSize
   );
 
+  const paginatedMemberUsers = sortedMemberUsers?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-2">
+      <h1 className="text-center text-xl md:text-3xl font-bold mt-4">
         Admin Dashboard
       </h1>
       <div className="section__container-2">
@@ -375,7 +397,7 @@ export default function Dashboard() {
           </button>
         </div>
         <div className="flex justify-center mt-4">
-          <div className="dashboard-history-container">
+          <div className="dashboard-history-container flex justify-around w-full">
             <button
               className={`tab-history-dashboard ${
                 selectedTab === "transactions" ? "active" : ""
@@ -407,6 +429,14 @@ export default function Dashboard() {
               onClick={() => setSelectedTab("admins")}
             >
               All Admin Users
+            </button>
+            <button
+              className={`tab-history-dashboard ${
+                selectedTab === "members" ? "active" : ""
+              }`}
+              onClick={() => setSelectedTab("members")}
+            >
+              All Member Users
             </button>
           </div>
         </div>
@@ -531,6 +561,35 @@ export default function Dashboard() {
                     current={currentPage}
                     pageSize={pageSize}
                     total={allAdminUsers?.length}
+                    onChange={handlePageChange}
+                    showSizeChanger
+                    pageSizeOptions={["10", "20", "50"]}
+                  />
+                </>
+              ) : (
+                <Empty description="No Admin Users Found" />
+              )}
+            </>
+          )}
+          {selectedTab === "members" && (
+            <>
+              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
+                All Member Users
+              </h2>
+              {allMemberUsers?.length > 0 ? (
+                <>
+                  <div className="table-responsive">
+                    <Table
+                      dataSource={paginatedMemberUsers}
+                      columns={adminColumns}
+                      rowKey="membershipId"
+                      pagination={false}
+                    />
+                  </div>
+                  <Pagination
+                    current={currentPage}
+                    pageSize={pageSize}
+                    total={allMemberUsers?.length}
                     onChange={handlePageChange}
                     showSizeChanger
                     pageSizeOptions={["10", "20", "50"]}
