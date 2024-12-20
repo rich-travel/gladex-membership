@@ -40,8 +40,6 @@ export default function AddMemberLevelModal() {
     }
   };
 
-  console.log(membershipLevels?.length);
-
   return (
     <Modal
       title="Add Membership Level"
@@ -54,7 +52,7 @@ export default function AddMemberLevelModal() {
         onFinish={handleSubmit}
         layout="vertical"
         initialValues={{
-          membershipLevel: membershipLevels?.length + 1,
+          membershipLevel: membershipLevels?.length === 0 ? 0 : membershipLevels?.length + 1,
         }}
       >
         <Form.Item
