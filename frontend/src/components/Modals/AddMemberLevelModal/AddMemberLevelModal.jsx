@@ -52,7 +52,8 @@ export default function AddMemberLevelModal() {
         onFinish={handleSubmit}
         layout="vertical"
         initialValues={{
-          membershipLevel: membershipLevels?.length === 0 ? 0 : membershipLevels?.length + 1,
+          membershipLevel:
+            membershipLevels?.length === 0 ? 0 : membershipLevels?.length + 1,
         }}
       >
         <Form.Item
@@ -71,7 +72,13 @@ export default function AddMemberLevelModal() {
             { required: true, message: "Please input the membership level!" },
           ]}
         >
-          <Input type="number" disabled />
+          <Input
+            type="number"
+            value={
+              membershipLevels?.length === 0 ? 0 : membershipLevels?.length + 1
+            }
+            disabled
+          />
         </Form.Item>
         <Form.Item
           label="Requirements Amount"
@@ -117,7 +124,12 @@ export default function AddMemberLevelModal() {
           <ReactQuill theme="snow" />
         </Form.Item>
         <Form.Item>
-          <Button className="btn" type="primary" htmlType="submit" loading={loading}>
+          <Button
+            className="btn"
+            type="primary"
+            htmlType="submit"
+            loading={loading}
+          >
             Add
           </Button>
         </Form.Item>
