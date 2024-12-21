@@ -1,14 +1,15 @@
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal } from "antd";
 import { useEffect, useState } from "react";
+import { BiQrScan } from "react-icons/bi";
+import { FaRegImage } from "react-icons/fa6";
+import { IoChevronBack } from "react-icons/io5";
 import Swal from "sweetalert2";
 import useAuthStore from "../../../stores/authStore";
 import useTransferPointsModalStore from "../../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../../stores/transferPointsStore";
-import { FaRegImage } from "react-icons/fa6";
-import { BiQrScan } from "react-icons/bi";
-import QRCode from "react-qr-code";
-import QrScanner from "react-qr-scanner";
+import ShowQR from "./components/ShowQR";
+import UploadQR from "./components/UploadQR";
 
 export default function TransferPointsModal() {
   const [form] = Form.useForm();
@@ -22,9 +23,7 @@ export default function TransferPointsModal() {
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
   const { transferPoints, loading } = useTransferPointsStore();
 
-  const [showQrReader, setShowQrReader] = useState(false);
-  const [showMyQr, setShowMyQr] = useState(false);
-  const [pointsToAdd, setPointsToAdd] = useState("");
+  const [activeTab, setActiveTab] = useState(0);
 
   const [transferPointsPayload, setTransferPointsPayload] = useState({
     fromMembershipId: userInfo?.membershipId,
@@ -51,6 +50,10 @@ export default function TransferPointsModal() {
     }));
   };
 
+  const handleTab = (tab) => {
+    setActiveTab(tab);
+  };
+
   const handleQrScan = (data) => {
     if (data) {
       const parsedData = JSON.parse(data);
@@ -63,7 +66,6 @@ export default function TransferPointsModal() {
         toMembershipId: parsedData.membershipId || "",
         points: parsedData.points || "",
       });
-      setShowQrReader(false);
     }
   };
 
@@ -74,19 +76,6 @@ export default function TransferPointsModal() {
       title: "QR Scan Failed",
       text: err.message,
     });
-  };
-
-  const handleShowMyQr = () => {
-    setShowMyQr(true);
-  };
-
-  const handleAddPoints = () => {
-    setTransferPointsPayload((prev) => ({
-      ...prev,
-      points: pointsToAdd,
-    }));
-    form.setFieldsValue({ points: pointsToAdd });
-    setShowMyQr(false);
   };
 
   const handleSubmit = async () => {
@@ -132,141 +121,140 @@ export default function TransferPointsModal() {
           <h3 className="text-center mb-3 font-bold text-lg">
             Transfer Points
           </h3>
-          {/* <div className="flex justify-around mb-4">
+          {activeTab !== 0 && (
             <div
-              className="flex flex-col items-center p-3 cursor-pointer font-semibold"
-              onClick={() => setShowQrReader(true)}
+              onClick={() => setActiveTab(0)}
+              className="inline-flex items-center cursor-pointer gap-2 font-semibold mb-2"
             >
-              <FaRegImage className="text-xl" />
-              <span>Upload QR</span>
-            </div>
-            <div
-              className="flex flex-col items-center p-3 cursor-pointer font-semibold"
-              onClick={handleShowMyQr}
-            >
-              <BiQrScan className="text-xl" />
-              <span>Show My QR</span>
-            </div>
-          </div>
-          {showQrReader && (
-            <div className="relative">
-              <QrScanner
-                delay={300}
-                onError={handleQrError}
-                onScan={handleQrScan}
-                style={{ width: "100%" }}
-              />
-              <Button
-                className="absolute top-0 right-0 m-2"
-                onClick={() => setShowQrReader(false)}
-              >
-                Close
-              </Button>
+              <IoChevronBack />
+              <span>Back</span>
             </div>
           )}
-          {showMyQr && (
-            <div className="flex flex-col items-center mb-4">
-              <QRCode value={JSON.stringify({ membershipId: userInfo?.membershipId })} />
-              <Input
-                className="mt-2"
-                placeholder="Enter points to add"
-                value={pointsToAdd}
-                onChange={(e) => setPointsToAdd(e.target.value)}
-              />
-              <Button className="mt-2" onClick={handleAddPoints}>
-                Add Points
-              </Button>
+          {activeTab === 0 && (
+            <div className="flex justify-around mb-4">
+              <div
+                className="flex flex-col items-center p-3 cursor-pointer font-semibold"
+                onClick={() => handleTab(1)}
+              >
+                <FaRegImage className="text-xl" />
+                <span>Upload QR</span>
+              </div>
+              <div
+                className="flex flex-col items-center p-3 cursor-pointer font-semibold"
+                onClick={() => handleTab(2)}
+              >
+                <BiQrScan className="text-xl" />
+                <span>Show My QR</span>
+              </div>
             </div>
-          )} */}
-          <Form
-            form={form}
-            name="transfer_points"
-            initialValues={{
-              fromMembershipId: userInfo?.membershipId,
-              transferFee: getMembershipLevel?.transferFee,
-            }}
-            onFinish={handleSubmit}
-            layout="vertical"
-            requiredMark="optional"
-          >
-            <Form.Item
-              label="My Membership ID"
-              name="fromMembershipId"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Enter your membership ID"
-                name="fromMembershipId"
-                value={transferPointsPayload.fromMembershipId}
-                onChange={handleChange}
-                disabled
+          )}
+          <div>
+            {activeTab === 0 ? (
+              <Form
+                form={form}
+                name="transfer_points"
+                initialValues={{
+                  fromMembershipId: userInfo?.membershipId,
+                  transferFee: getMembershipLevel?.transferFee,
+                }}
+                onFinish={handleSubmit}
+                layout="vertical"
+                requiredMark="optional"
+              >
+                <Form.Item
+                  label="My Membership ID"
+                  name="fromMembershipId"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input
+                    prefix={<UserOutlined />}
+                    placeholder="Enter your membership ID"
+                    name="fromMembershipId"
+                    value={transferPointsPayload.fromMembershipId}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="To Membership ID"
+                  name="toMembershipId"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input the recipient's membership ID!",
+                    },
+                  ]}
+                >
+                  <Input
+                    prefix={<UserOutlined />}
+                    placeholder="Enter recipient's membership ID"
+                    name="toMembershipId"
+                    value={transferPointsPayload.toMembershipId}
+                    onChange={handleChange}
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Transfer Fee"
+                  name="transferFee"
+                  rules={[
+                    {
+                      required: true,
+                    },
+                  ]}
+                >
+                  <Input
+                    prefix={<DollarOutlined />}
+                    placeholder={transferPointsPayload.transferFee}
+                    name="transferFee"
+                    value={transferPointsPayload.transferFee}
+                    onChange={handleChange}
+                    disabled
+                  />
+                </Form.Item>
+                <Form.Item
+                  label="Points"
+                  name="points"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input the number of points to transfer!",
+                    },
+                  ]}
+                >
+                  <Input
+                    prefix={<DollarOutlined />}
+                    placeholder="Enter points to transfer"
+                    name="points"
+                    value={transferPointsPayload.points}
+                    onChange={handleChange}
+                  />
+                </Form.Item>
+                <Form.Item style={{ marginBottom: "0px" }}>
+                  <Button
+                    className="btn"
+                    block
+                    type="primary"
+                    htmlType="submit"
+                    loading={loading}
+                  >
+                    Submit
+                  </Button>
+                </Form.Item>
+              </Form>
+            ) : activeTab === 1 ? (
+              <UploadQR
+                handleQrError={handleQrError}
+                handleQrScan={handleQrScan}
+                handleTab={handleTab}
               />
-            </Form.Item>
-            <Form.Item
-              label="To Membership ID"
-              name="toMembershipId"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the recipient's membership ID!",
-                },
-              ]}
-            >
-              <Input
-                prefix={<UserOutlined />}
-                placeholder="Enter recipient's membership ID"
-                name="toMembershipId"
-                value={transferPointsPayload.toMembershipId}
-                onChange={handleChange}
-              />
-            </Form.Item>
-            <Form.Item
-              label="Transfer Fee"
-              name="transferFee"
-              rules={[
-                {
-                  required: true,
-                },
-              ]}
-            >
-              <Input
-                prefix={<DollarOutlined />}
-                placeholder={transferPointsPayload.transferFee}
-                name="transferFee"
-                value={transferPointsPayload.transferFee}
-                onChange={handleChange}
-                disabled
-              />
-            </Form.Item>
-            <Form.Item
-              label="Points"
-              name="points"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input the number of points to transfer!",
-                },
-              ]}
-            >
-              <Input
-                prefix={<DollarOutlined />}
-                placeholder="Enter points to transfer"
-                name="points"
-                value={transferPointsPayload.points}
-                onChange={handleChange}
-              />
-            </Form.Item>
-            <Form.Item style={{ marginBottom: "0px" }}>
-              <Button className="btn" block type="primary" htmlType="submit" loading={loading}>
-                Submit
-              </Button>
-            </Form.Item>
-          </Form>
+            ) : (
+              <ShowQR />
+            )}
+          </div>
         </div>
       </section>
     </Modal>
