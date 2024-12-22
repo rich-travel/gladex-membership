@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import useTransactionModalStore from "../../../stores/transactionModalStore";
 import useTransactionPackageStore from "../../../stores/transactionPackageStore";
+import { MdAttachFile } from "react-icons/md";
 
 export default function TransactionModal() {
   const [form] = Form.useForm();
@@ -106,9 +107,7 @@ export default function TransactionModal() {
     >
       <section>
         <div className="transaction-container">
-          <h3 className="text-center mb-3 font-bold text-lg">
-            Transaction
-          </h3>
+          <h3 className="text-center mb-3 font-bold text-lg">Transaction</h3>
           <Form
             form={form}
             name="transaction_form"
@@ -126,7 +125,10 @@ export default function TransactionModal() {
                 accept=".xlsx, .xls"
                 showUploadList={false}
               >
-                <Button>Upload Excel File</Button>
+                <Button>
+                  <MdAttachFile />
+                  <span>Upload Excel File</span>
+                </Button>
               </Upload>
             </Form.Item>
 
@@ -191,7 +193,7 @@ export default function TransactionModal() {
             </Form.Item>
 
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button className="btn" block type="primary" htmlType="submit">
+              <Button className="btn" block type="secondary" htmlType="submit">
                 Submit
               </Button>
             </Form.Item>

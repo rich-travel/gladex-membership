@@ -42,11 +42,14 @@ export default function AddMemberLevelModal() {
 
   return (
     <Modal
-      title="Add Membership Level"
+      title={null}
       footer={null}
       open={membershipLevelModal}
       onCancel={handleMemberhipLevelModal}
     >
+      <h3 className="text-center mb-3 font-bold text-lg">
+        Add Membership Level
+      </h3>
       <Form
         form={form}
         onFinish={handleSubmit}
@@ -119,8 +122,8 @@ export default function AddMemberLevelModal() {
         </Form.Item>
         <Form.Item>
           <Button
-            className="btn"
-            type="primary"
+            className="btn w-full"
+            type="secondary"
             htmlType="submit"
             loading={loading}
           >

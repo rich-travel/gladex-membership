@@ -55,7 +55,7 @@ export default function ChangeAdminModal() {
       <section>
         <div className="change-admin-container">
           <h3 className="text-center mb-3 font-bold text-lg">
-            Change Admin
+            Change User to Admin
           </h3>
           <Form
             name="normal_login"
@@ -86,7 +86,7 @@ export default function ChangeAdminModal() {
               />
             </Form.Item>
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button className="btn" block type="primary" htmlType="submit">
+              <Button className="btn" block type="secondary" htmlType="submit">
                 Update to Admin
               </Button>
             </Form.Item>

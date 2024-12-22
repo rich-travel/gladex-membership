@@ -1,7 +1,7 @@
 import { DollarOutlined, UserOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Modal } from "antd";
 import { useEffect, useState } from "react";
-import { BiQrScan } from "react-icons/bi";
+import { BiQrScan, BiScan } from "react-icons/bi";
 import { FaRegImage } from "react-icons/fa6";
 import { IoChevronBack } from "react-icons/io5";
 import Swal from "sweetalert2";
@@ -9,6 +9,7 @@ import useAuthStore from "../../../stores/authStore";
 import useTransferPointsModalStore from "../../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../../stores/transferPointsStore";
 import ShowQR from "./components/ShowQR";
+import ScanQR from "./components/ScanQR";
 import UploadQR from "./components/UploadQR";
 
 export default function TransferPointsModal() {
@@ -109,6 +110,10 @@ export default function TransferPointsModal() {
     }
   };
 
+  const isMobileDevice = () => {
+    return /Mobi|Android/i.test(navigator.userAgent);
+  };
+
   return (
     <Modal
       title={null}
@@ -142,6 +147,13 @@ export default function TransferPointsModal() {
               <div
                 className="flex flex-col items-center p-3 cursor-pointer font-semibold"
                 onClick={() => handleTab(2)}
+              >
+                <BiScan className="text-xl" />
+                <span>Scan QR</span>
+              </div>
+              <div
+                className="flex flex-col items-center p-3 cursor-pointer font-semibold"
+                onClick={() => handleTab(3)}
               >
                 <BiQrScan className="text-xl" />
                 <span>Show My QR</span>
@@ -203,6 +215,7 @@ export default function TransferPointsModal() {
                   rules={[
                     {
                       required: true,
+                      message: "Please input the transfer fee!",
                     },
                   ]}
                 >
@@ -237,7 +250,7 @@ export default function TransferPointsModal() {
                   <Button
                     className="btn"
                     block
-                    type="primary"
+                    type="secondary"
                     htmlType="submit"
                     loading={loading}
                   >
@@ -251,6 +264,17 @@ export default function TransferPointsModal() {
                 handleQrScan={handleQrScan}
                 handleTab={handleTab}
               />
+            ) : activeTab === 2 ? (
+              isMobileDevice() ? (
+                <ScanQR
+                  handleQrError={handleQrError}
+                  handleQrScan={handleQrScan}
+                />
+              ) : (
+                <div className="text-center">
+                  <p>QR scanning is only available on mobile devices.</p>
+                </div>
+              )
             ) : (
               <ShowQR />
             )}

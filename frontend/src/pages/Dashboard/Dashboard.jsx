@@ -9,6 +9,9 @@ import useMembershipLevelStore from "../../stores/membershipLevelStore";
 import useTransactionModalStore from "../../stores/transactionModalStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
 import useTransferPointsStore from "../../stores/transferPointsStore";
+import { formatCurrency, getCurrencyInfo } from "../../utils/GeneralHelper";
+import { FaUserPlus } from "react-icons/fa";
+import { FaPlusCircle } from "react-icons/fa";
 import "./Dashboard.css";
 
 export default function Dashboard() {
@@ -98,7 +101,7 @@ export default function Dashboard() {
         />
         <Space>
           <Button
-            type="primary"
+            type="secondary"
             onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
             icon={<SearchOutlined />}
             size="small"
@@ -174,6 +177,8 @@ export default function Dashboard() {
       ),
   });
 
+  const currencyInfo = getCurrencyInfo();
+
   const packageColumns = [
     {
       title: "Membership ID",
@@ -197,15 +202,15 @@ export default function Dashboard() {
       title: "Price",
       dataIndex: "packagePrice",
       key: "packagePrice",
-      render: (text) => `₱${text}`,
-      ...getColumnSearchProps("packagePrice"),
+      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
+      // ...getColumnSearchProps("packagePrice"),
     },
     {
       title: "Earned Points",
       dataIndex: "earnPoints",
       key: "earnPoints",
-      render: (text) => `₱${text}`,
-      ...getColumnSearchProps("earnPoints"),
+      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
+      // ...getColumnSearchProps("earnPoints"),
     },
     {
       title: "Date",
@@ -232,13 +237,15 @@ export default function Dashboard() {
       title: "Points Transferred",
       dataIndex: "pointsTransferred",
       key: "pointsTransferred",
-      ...getColumnSearchProps("pointsTransferred"),
+      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
+      // ...getColumnSearchProps("pointsTransferred"),
     },
     {
       title: "Transfer Fee",
       dataIndex: "transferFee",
       key: "transferFee",
-      ...getColumnSearchProps("transferFee"),
+      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
+      // ...getColumnSearchProps("transferFee"),
     },
     {
       title: "Date Transferred",
@@ -265,13 +272,15 @@ export default function Dashboard() {
       title: "Requirements Amount",
       dataIndex: "requirementsAmount",
       key: "requirementsAmount",
-      ...getColumnSearchProps("requirementsAmount"),
+      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
+      // ...getColumnSearchProps("requirementsAmount"),
     },
     {
       title: "Transfer Fee",
       dataIndex: "transferFee",
       key: "transferFee",
-      ...getColumnSearchProps("transferFee"),
+      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
+      // ...getColumnSearchProps("transferFee"),
     },
     {
       title: "Benefits",
@@ -386,14 +395,26 @@ export default function Dashboard() {
       </h1>
       <div className="section__container-2">
         <div className="flex gap-2 flex-col md:flex-row md:justify-around">
-          <button onClick={handleTransactionModal} className="btn">
-            Create Transaction
+          <button
+            onClick={handleTransactionModal}
+            className="btn flex justify-center items-center gap-2"
+          >
+            <FaPlusCircle className="text-xl" />
+            <span>Transaction</span>
           </button>
-          <button onClick={handleMemberhipLevelModal} className="btn">
-            Create Membership Level
+          <button
+            onClick={handleMemberhipLevelModal}
+            className="btn flex justify-center items-center gap-2"
+          >
+            <FaPlusCircle className="text-xl" />
+            <span>Member Level</span>
           </button>
-          <button onClick={handleChangeAdminModal} className="btn">
-            Create Admin
+          <button
+            onClick={handleChangeAdminModal}
+            className="btn flex justify-center items-center gap-2"
+          >
+            <FaUserPlus className="text-xl" />
+            <span>Admin</span>
           </button>
         </div>
         <div className="flex justify-center mt-4">

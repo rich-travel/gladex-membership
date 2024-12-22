@@ -29,7 +29,7 @@ export default function UploadQR({ handleQrError, handleQrScan, handleTab }) {
       />
       <div id="reader" style={{ width: "100%" }}></div>
       {file && (
-        <button className="btn btn-primary mt-4" onClick={() => handleTab(0)}>
+        <button className="btn btn-primary mt-4 w-full" onClick={() => handleTab(0)}>
           Save
         </button>
       )}

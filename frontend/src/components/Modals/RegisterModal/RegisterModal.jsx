@@ -237,7 +237,7 @@ export default function RegisterModal() {
             </Form.Item>
 
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button className="btn" block type="primary" htmlType="submit">
+              <Button className="btn" block type="secondary" htmlType="submit">
                 Sign up
               </Button>
               <div className="login-footer-wrapper">

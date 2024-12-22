@@ -119,7 +119,7 @@ export default function LoginModal() {
               </div>
             </Form.Item> */}
             <Form.Item style={{ marginBottom: "0px" }}>
-              <Button className="btn" block="true" type="primary" htmlType="submit">
+              <Button className="btn" block="true" type="secondary" htmlType="submit">
                 Log in
               </Button>
               <div className="login-footer-wrapper">

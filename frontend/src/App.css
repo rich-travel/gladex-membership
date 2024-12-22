@@ -456,6 +456,12 @@ nav {
   border-radius: 5px;
 }
 
+.program-desc {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 10px;
+}
+
 @media screen and (min-width: 768px) {
   .home {
     background: linear-gradient(rgba(34, 36, 36, 0.7), rgba(0, 0, 0, 0.2)),
@@ -490,6 +496,7 @@ nav {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    width: 1000px;
   }
 }
 

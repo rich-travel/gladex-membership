@@ -1,13 +1,17 @@
 import { Input } from "antd";
 import html2canvas from "html2canvas";
 import { useState } from "react";
-import { GoPlusCircle } from "react-icons/go";
+import { FaPlusCircle } from "react-icons/fa";
 import { IoCloseSharp } from "react-icons/io5";
 import { RiDownloadLine } from "react-icons/ri";
 import QRCode from "react-qr-code";
 import Swal from "sweetalert2";
 import logo from "../../../../assets/images/logo.png";
 import useAuthStore from "../../../../stores/authStore";
+import {
+  formatCurrency,
+  getCurrencyInfo,
+} from "../../../../utils/GeneralHelper";
 
 export default function ShowQR() {
   const { userInfo } = useAuthStore();
@@ -17,11 +21,13 @@ export default function ShowQR() {
     JSON.stringify({ membershipId: userInfo?.membershipId })
   );
 
+  const currencyInfo = getCurrencyInfo();
+
   const maskMembershipId = (membershipId) => {
     if (!membershipId) return "";
     const visibleDigits = membershipId.slice(-4);
     const maskedDigits = membershipId.slice(0, -4).replace(/./g, "*");
-    return `${maskedDigits}${visibleDigits}`;
+    return `${maskedDigits} ${visibleDigits}`;
   };
 
   const handleTab = (tab) => {
@@ -29,10 +35,12 @@ export default function ShowQR() {
   };
 
   const handleSavePoints = () => {
+    const points =
+      pointsToAdd === "0" ? Math.floor(Math.random() * 1000) : pointsToAdd;
     setQrValue(
       JSON.stringify({
         membershipId: userInfo?.membershipId,
-        points: pointsToAdd,
+        points: points,
       })
     );
     Swal.fire({
@@ -74,7 +82,12 @@ export default function ShowQR() {
               <QRCode value={qrValue} />
               {pointsToAdd && (
                 <span className="mt-4 text-lg font-bold">
-                  Points: ₱ {pointsToAdd}
+                  Points: {currencyInfo?.symbol}{" "}
+                  {formatCurrency(
+                    pointsToAdd === "0"
+                      ? Math.floor(Math.random() * 1000) + 1
+                      : pointsToAdd
+                  )}
                 </span>
               )}
               <span className="mt-4 mb-4 text-xs">Transfer fees may apply</span>
@@ -84,7 +97,7 @@ export default function ShowQR() {
                 onClick={() => handleTab(1)}
                 className="btn w-full flex items-center justify-center gap-2"
               >
-                <GoPlusCircle className="text-lg" />
+                <FaPlusCircle className="text-xl" />
                 <span>Add Points</span>
               </div>
 
@@ -92,25 +105,25 @@ export default function ShowQR() {
                 className="btn-brand w-full flex items-center justify-center gap-2"
                 onClick={handleDownloadQR}
               >
-                <RiDownloadLine className="text-lg" />
+                <RiDownloadLine className="text-xl" />
                 <span>Download QR</span>
               </div>
             </div>
           </>
         ) : (
           <>
-            <div className="bg-slate-200 p-6 rounded-xl">
+            <div className="bg-slate-200 w-80 p-6 rounded-xl">
               <div className="flex justify-between">
-                <div></div>
+                <div>Add Amount</div>
                 <IoCloseSharp
                   onClick={() => handleTab(0)}
-                  className="cursor-pointer text-lg"
+                  className="cursor-pointer text-xl"
                 />
               </div>
               <div className="flex flex-col items-center gap-2">
                 <Input
                   className="mt-4"
-                  placeholder="Enter points to add"
+                  placeholder="Enter the amount of points to add"
                   value={pointsToAdd}
                   onChange={(e) => setPointsToAdd(e.target.value)}
                 />
@@ -118,7 +131,7 @@ export default function ShowQR() {
                   className="btn w-full flex items-center justify-center gap-2 mt-4"
                   onClick={handleSavePoints}
                 >
-                  Save Points
+                  Save
                 </div>
               </div>
             </div>

@@ -1,12 +1,14 @@
 import { Empty, message, Table } from "antd";
 import { useEffect, useState } from "react";
-import { FiEdit } from "react-icons/fi";
 import { FaCopy } from "react-icons/fa";
+import { FiEdit } from "react-icons/fi";
+import { BiTransfer } from "react-icons/bi";
 import useAuthStore from "../../stores/authStore";
+import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
 import useTransferPointsModalStore from "../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../stores/transferPointsStore";
-import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
+import { formatCurrency, getCurrencyInfo } from "../../utils/GeneralHelper";
 import "./Profile.css";
 
 export default function Profile() {
@@ -50,6 +52,8 @@ export default function Profile() {
     fetchMembershipLevel,
   ]);
 
+  const currencyInfo = getCurrencyInfo();
+
   const packageColumns = [
     {
       title: "Package",
@@ -60,13 +64,13 @@ export default function Profile() {
       title: "Price",
       dataIndex: "packagePrice",
       key: "packagePrice",
-      render: (text) => `₱${text}`,
+      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
     },
     {
       title: "Earned Points",
       dataIndex: "earnPoints",
       key: "earnPoints",
-      render: (text) => `₱${text}`,
+      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
     },
     {
       title: "Date",
@@ -91,11 +95,13 @@ export default function Profile() {
       title: "Points Transferred",
       dataIndex: "pointsTransferred",
       key: "pointsTransferred",
+      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
     },
     {
       title: "Transfer Fee",
       dataIndex: "transferFee",
       key: "transferFee",
+      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
     },
     {
       title: "Date Transferred",
@@ -169,8 +175,12 @@ export default function Profile() {
             </div>
           </div>
           <div className="my-4">
-            <button onClick={handleTransferPointsModal} className="btn">
-              Transfer Points
+            <button
+              onClick={handleTransferPointsModal}
+              className="btn flex justify-center items-center gap-2"
+            >
+              <BiTransfer className="text-xl" />
+              <span>Transfer Points</span>
             </button>
           </div>
         </div>
