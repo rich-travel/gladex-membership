@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import PropTypes from "prop-types";
+import Swal from "sweetalert2";
 
-export default function ScanQR({ handleQrScan, handleQrError }) {
+export default function ScanQR({ handleQrScan, handleQrError, handleTab }) {
   useEffect(() => {
     const html5QrcodeScanner = new Html5QrcodeScanner(
       "reader",
@@ -14,16 +15,22 @@ export default function ScanQR({ handleQrScan, handleQrError }) {
       (decodedText) => {
         handleQrScan(decodedText);
         html5QrcodeScanner.clear();
-      },
-    //   (error) => {
-    //     handleQrError(error);
-    //   }
+        Swal.fire({
+          icon: "success",
+          title: "QR Code Scanned",
+          text: "QR Code scanned successfully",
+        });
+        handleTab(0);
+      }
+      //   (error) => {
+      //     handleQrError(error);
+      //   }
     );
 
     return () => {
       html5QrcodeScanner.clear();
     };
-  }, [handleQrScan, handleQrError]);
+  }, [handleQrScan, handleQrError, handleTab]);
 
   return <div id="reader" style={{ width: "100%" }}></div>;
 }
@@ -31,4 +38,5 @@ export default function ScanQR({ handleQrScan, handleQrError }) {
 ScanQR.propTypes = {
   handleQrScan: PropTypes.func.isRequired,
   handleQrError: PropTypes.func.isRequired,
+  handleTab: PropTypes.func.isRequired,
 };

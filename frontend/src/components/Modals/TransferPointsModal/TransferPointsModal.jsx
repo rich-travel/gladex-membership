@@ -269,6 +269,7 @@ export default function TransferPointsModal() {
                 <ScanQR
                   handleQrError={handleQrError}
                   handleQrScan={handleQrScan}
+                  handleTab={handleTab}
                 />
               ) : (
                 <div className="text-center">
