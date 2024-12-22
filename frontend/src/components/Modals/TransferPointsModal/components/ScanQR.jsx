@@ -15,9 +15,9 @@ export default function ScanQR({ handleQrScan, handleQrError }) {
         handleQrScan(decodedText);
         html5QrcodeScanner.clear();
       },
-      (error) => {
-        handleQrError(error);
-      }
+    //   (error) => {
+    //     handleQrError(error);
+    //   }
     );
 
     return () => {
