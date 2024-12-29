@@ -6,8 +6,9 @@ import Swal from "sweetalert2";
 import useAuthStore from "../stores/authStore";
 import useLoginModalStore from "../stores/loginModalStore";
 import useRegisterModalStore from "../stores/registerModalStore";
-import logo from "../assets/images/logo.png";
+import logo from "../assets/images/nav-logo.png";
 import useMyQrCodeModalStore from "../stores/myQrCodeModalStore";
+import useLoyaltyCardStore from "../stores/loyaltyCardStore";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -16,6 +17,10 @@ export default function Navbar() {
   );
   const handleRegisterModal = useRegisterModalStore(
     (state) => state.handleRegisterModal
+  );
+  const loyaltyCard = useLoyaltyCardStore((state) => state.loyaltyCard);
+  const handleLoyaltyCardModal = useLoyaltyCardStore(
+    (state) => state.handleLoyaltyCardModal
   );
   const logout = useAuthStore((state) => state.logout);
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
@@ -75,6 +80,10 @@ export default function Navbar() {
       {
         title: "Membership Program",
         link: "/membership-program",
+      },
+      {
+        title: "E-Loyalty Card",
+        link: "/loyalty-card",
       }
     );
   }
@@ -99,6 +108,10 @@ export default function Navbar() {
       {
         title: "Membership Program",
         link: "/membership-program",
+      },
+      {
+        title: "E-Loyalty Card",
+        link: "/loyalty-card",
       }
     );
   }
@@ -127,7 +140,7 @@ export default function Navbar() {
       <nav className="max-w-screen-2xl mx-auto px-4 flex justify-center items-center">
         <div className="nav__logo">
           <Link to={"/"}>
-            <img alt="logo" src={logo} className="w-16 h-12" />
+            <img alt="logo" src={logo} />
           </Link>
         </div>
         <ul className="nav__links">
@@ -140,6 +153,9 @@ export default function Navbar() {
           <li className="link">
             <Link to={"/membership-program"}>Membership Program</Link>
           </li>
+          <li className="link">
+            <Link to={"/loyalty-card"}>E-Loyalty Card</Link>
+          </li>
         </ul>
 
         <div className="nav__icons relative">
@@ -149,19 +165,22 @@ export default function Navbar() {
                 className="cursor-pointer text-2xl"
                 onClick={handleLoginModal}
               >
-                <IoIosLogIn style={{color: "#73716F"}} />
+                <IoIosLogIn style={{ color: "#73716F" }} />
               </span>
               <span
                 className="cursor-pointer text-2xl"
                 onClick={handleRegisterModal}
               >
-                <FaUser style={{color: "#73716F"}} />
+                <FaUser style={{ color: "#73716F" }} />
               </span>
             </>
           )}
           {user && (
             <>
-              <span className="cursor-pointer mr-4 md:mr-10" onClick={handleDropDown}>
+              <span
+                className="cursor-pointer mr-2 md:mr-10"
+                onClick={handleDropDown}
+              >
                 <img
                   className="w-8 h-8 rounded-full"
                   src={`/avatar/${userInfo?.userProfile}.png`}

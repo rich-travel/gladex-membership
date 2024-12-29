@@ -1,23 +1,25 @@
-import { Empty, message, Table } from "antd";
-import { useEffect, useState } from "react";
+import { Empty } from "antd";
+import { useEffect } from "react";
+import { BiTransfer } from "react-icons/bi";
 import { FaCopy } from "react-icons/fa";
 import { FiEdit } from "react-icons/fi";
-import { BiTransfer } from "react-icons/bi";
 import useAuthStore from "../../stores/authStore";
 import useEditProfilePictureModalStore from "../../stores/editProfilePictureModalStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
 import useTransferPointsModalStore from "../../stores/transferPointsModalStore";
 import useTransferPointsStore from "../../stores/transferPointsStore";
-import { formatCurrency, getCurrencyInfo } from "../../utils/GeneralHelper";
+import {
+  copyToClipboard,
+  formatCurrency,
+  getCurrencyInfo,
+} from "../../utils/GeneralHelper";
 import "./Profile.css";
+import { Link } from "react-router-dom";
+import DashboardLayout from "../../components/DashboardLayout";
 
 export default function Profile() {
-  const { user } = useAuthStore();
-  const { userPackages, fetchUserPackages, loading, error } =
-    useTransactionPackageStore();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [selectedTab, setSelectedTab] = useState("transactions");
+  const { userInfo } = useAuthStore();
+  const { userPackages, fetchUserPackages } = useTransactionPackageStore();
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
   const fetchMembershipLevel = useAuthStore(
     (state) => state.fetchMembershipLevel
@@ -29,23 +31,17 @@ export default function Profile() {
   const handleEditProfilePictureModal = useEditProfilePictureModalStore(
     (state) => state.handleEditProfilePictureModal
   );
-  const { userInfo } = useAuthStore();
-  const {
-    transferHistory,
-    fetchTransferHistory,
-    loading: transferLoading,
-    error: transferError,
-  } = useTransferPointsStore();
+  const { transferHistory, fetchTransferHistory } = useTransferPointsStore();
 
   useEffect(() => {
-    if (user?.membershipId) {
-      fetchUserPackages(user?.membershipId);
-      fetchUserInfo(user?.membershipId);
-      fetchTransferHistory(user?.membershipId);
-      fetchMembershipLevel(user?.membershipId);
+    if (userInfo?.membershipId) {
+      fetchUserPackages(userInfo?.membershipId);
+      fetchUserInfo(userInfo?.membershipId);
+      fetchTransferHistory(userInfo?.membershipId);
+      fetchMembershipLevel(userInfo?.membershipId);
     }
   }, [
-    user,
+    userInfo,
     fetchUserPackages,
     fetchUserInfo,
     fetchTransferHistory,
@@ -53,79 +49,6 @@ export default function Profile() {
   ]);
 
   const currencyInfo = getCurrencyInfo();
-
-  const packageColumns = [
-    {
-      title: "Package",
-      dataIndex: "packageAvailed",
-      key: "packageAvailed",
-    },
-    {
-      title: "Price",
-      dataIndex: "packagePrice",
-      key: "packagePrice",
-      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
-    },
-    {
-      title: "Earned Points",
-      dataIndex: "earnPoints",
-      key: "earnPoints",
-      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
-    },
-    {
-      title: "Date",
-      dataIndex: "dateCreated",
-      key: "dateCreated",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-  ];
-
-  const transferColumns = [
-    {
-      title: "To Membership ID",
-      dataIndex: "toMembershipId",
-      key: "toMembershipId",
-    },
-    {
-      title: "Full Name",
-      dataIndex: "toFullName",
-      key: "toFullName",
-    },
-    {
-      title: "Points Transferred",
-      dataIndex: "pointsTransferred",
-      key: "pointsTransferred",
-      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
-    },
-    {
-      title: "Transfer Fee",
-      dataIndex: "transferFee",
-      key: "transferFee",
-      render: (text) => `${currencyInfo.symbol}${formatCurrency(text)}`,
-    },
-    {
-      title: "Date Transferred",
-      dataIndex: "dateTransferred",
-      key: "dateTransferred",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-  ];
-
-  const copyToClipboard = (text) => {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        message.success("Membership ID copied to clipboard");
-      })
-      .catch((err) => {
-        message.error("Failed to copy Membership ID", err);
-      });
-  };
-
-  const handleTableChange = (pagination) => {
-    setCurrentPage(pagination.current);
-    setPageSize(pagination.pageSize);
-  };
 
   const sortedUserPackages = userPackages
     ? [...userPackages]?.sort(
@@ -141,9 +64,7 @@ export default function Profile() {
 
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-4">
-        Profile
-      </h1>
+      <DashboardLayout title="Profile" />
       <div className="section__container-2">
         <div className="flex flex-col gap-6 md:flex-row justify-around items-center">
           <div className="flex gap-4 items-center relative p-2">
@@ -184,7 +105,7 @@ export default function Profile() {
             </button>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row md:justify-center md:items-baseline gap-6">
+        <div className="flex flex-col md:flex-row md:justify-center md:items-baseline gap-6 md:mt-6">
           <div className="left-section flex justify-around gap-6 flex-col">
             <div className="flex flex-col items-center gap-2">
               <span className="font-semibold">My Membership Level</span>
@@ -196,89 +117,125 @@ export default function Profile() {
             </div>
             <div className="flex flex-col items-center gap-2">
               <span className="font-semibold">My Total Points</span>
-              <span className="text-1xl md:text-4xl font-bold">
+              <span className="text-2xl md:text-4xl font-bold">
                 {userInfo?.points}
               </span>
             </div>
           </div>
           <div className="right-section">
-            <div className="flex justify-center">
-              <div className="profile-history-container w-full flex justify-around gap-4 font-bold">
-                <button
-                  className={`tab-history-profile ${
-                    selectedTab === "transactions" ? "active" : ""
-                  }`}
-                  onClick={() => setSelectedTab("transactions")}
-                >
-                  Transaction History
-                </button>
-                <button
-                  className={`tab-history-profile ${
-                    selectedTab === "transfers" ? "active" : ""
-                  }`}
-                  onClick={() => setSelectedTab("transfers")}
-                >
-                  Transfer Points History
-                </button>
-              </div>
-            </div>
             <div>
-              {selectedTab === "transactions" && (
-                <>
-                  {loading && <p>Loading transactions...</p>}
-                  {error && <p className="text-red-500">{error}</p>}
-                  {!loading &&
-                    !error &&
-                    (sortedUserPackages.length > 0 ? (
-                      <div className="table-responsive">
-                        <Table
-                          dataSource={sortedUserPackages}
-                          columns={packageColumns}
-                          rowKey="_id"
-                          pagination={{
-                            current: currentPage,
-                            pageSize: pageSize,
-                            total: sortedUserPackages.length,
-                            showSizeChanger: true,
-                            pageSizeOptions: ["10", "20", "50"],
-                          }}
-                          onChange={handleTableChange}
-                        />
+              <div className="flex justify-between font-semibold mb-2">
+                <span>Points Earned</span>
+                {sortedUserPackages?.length > 4 && (
+                  <Link to="/points-history">
+                    <span className="text-orange-500 cursor-pointer">
+                      See All
+                    </span>
+                  </Link>
+                )}
+              </div>
+              <div>
+                {sortedUserPackages?.length > 0 ? (
+                  <div className="points-wrapper">
+                    {sortedUserPackages?.map((item, index) => (
+                      <div key={index} className="points-card">
+                        <div>{item?.packageAvailed}</div>
+                        <div className="flex justify-between">
+                          <span>
+                            {currencyInfo.symbol}
+                            {formatCurrency(item?.packagePrice)}
+                          </span>
+                          <span className="text-green-600 font-semibold">
+                            +{currencyInfo.symbol}
+                            {formatCurrency(item?.earnPoints)}
+                          </span>
+                        </div>
+                        <div className="text-gray-500 text-xs mt-2">
+                          {new Date(item?.dateCreated).toLocaleString()}
+                        </div>
                       </div>
-                    ) : (
-                      <Empty description="No Transactions Found" />
                     ))}
-                </>
-              )}
-              {selectedTab === "transfers" && (
-                <>
-                  {transferLoading && <p>Loading transfer history...</p>}
-                  {transferError && (
-                    <p className="text-red-500">{transferError}</p>
-                  )}
-                  {!transferLoading &&
-                    !transferError &&
-                    (sortedTransferHistory?.length > 0 ? (
-                      <div className="table-responsive">
-                        <Table
-                          dataSource={sortedTransferHistory}
-                          columns={transferColumns}
-                          rowKey="_id"
-                          pagination={{
-                            current: currentPage,
-                            pageSize: pageSize,
-                            total: sortedTransferHistory?.length,
-                            showSizeChanger: true,
-                            pageSizeOptions: ["10", "20", "50"],
-                          }}
-                          onChange={handleTableChange}
-                        />
-                      </div>
-                    ) : (
-                      <Empty description="No Transfer History Found" />
-                    ))}
-                </>
-              )}
+                  </div>
+                ) : (
+                  <Empty description="No Points Earned" />
+                )}
+              </div>
+              <div className="flex justify-between font-semibold mb-2 mt-4">
+                <span>Transfer Points History</span>
+                {sortedTransferHistory?.length > 4 && (
+                  <Link to="/transfer-history">
+                    <span className="text-orange-500 cursor-pointer">
+                      See All
+                    </span>
+                  </Link>
+                )}
+              </div>
+              <div>
+                {sortedTransferHistory?.length > 0 ? (
+                  <div className="points-wrapper">
+                    {sortedTransferHistory?.map((item, index) => {
+                      const totalPoints =
+                        item?.pointsTransferred + item?.transferFee;
+                      const isReceived =
+                        item?.toMembershipId === userInfo?.membershipId;
+                      return (
+                        <div key={index} className="points-card">
+                          <div className="flex justify-between">
+                            <span>{isReceived ? "From:" : "To:"}</span>
+                            <span className="capitalize">
+                              {isReceived
+                                ? item?.fromFullName
+                                : item?.toFullName}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span>Fee:</span>
+                            <span className="text-red-500 font-semibold">
+                              -{currencyInfo.symbol}
+                              {formatCurrency(item?.transferFee)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between border-b-2 border-gray-500 pb-2">
+                            <span>Amount:</span>
+                            <span
+                              className={
+                                isReceived
+                                  ? "text-green-600 font-semibold"
+                                  : "text-red-500 font-semibold"
+                              }
+                            >
+                              {isReceived ? "+" : "-"}
+                              {currencyInfo.symbol}
+                              {formatCurrency(item?.pointsTransferred)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between mt-1">
+                            <span>{isReceived ? "Received" : "Deducted"}:</span>
+                            <span
+                              className={
+                                isReceived
+                                  ? "text-green-600 font-semibold"
+                                  : "text-red-500 font-semibold"
+                              }
+                            >
+                              {isReceived ? "+" : "-"}
+                              {currencyInfo.symbol}
+                              {isReceived
+                                ? item?.pointsTransferred
+                                : totalPoints}
+                            </span>
+                          </div>
+                          <div className="text-gray-500 text-xs mt-2">
+                            {new Date(item?.dateTransferred).toLocaleString()}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <Empty description="No Transfer History" />
+                )}
+              </div>
             </div>
           </div>
         </div>

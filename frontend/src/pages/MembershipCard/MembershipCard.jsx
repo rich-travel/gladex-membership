@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import useMembershipLevelStore from "../../stores/membershipLevelStore";
+import DashboardLayout from "../../components/DashboardLayout";
 
 export default function MembershipCard() {
   const { membershipLevels, fetchAllMembershipLevels, loading, error } =
@@ -11,9 +12,7 @@ export default function MembershipCard() {
 
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-4">
-        Membership Card
-      </h1>
+      <DashboardLayout title="Membership Levels" />
       <div className="section__container-2">
         {loading && <p>Loading membership levels...</p>}
         {error && <p className="text-red-500">{error}</p>}

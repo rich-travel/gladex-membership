@@ -1,5 +1,6 @@
 import AddMemberLevelModal from "./AddMemberLevelModal/AddMemberLevelModal";
 import ChangeAdminModal from "./ChangeAdminModal/ChangeAdminModal";
+import EditMemberLevelModal from "./EditMemberLevelModal/EditMemberLevelModal";
 import EditProfilePicture from "./EditProfilePictureModal/EditProfilePictureModal";
 import LoginModal from "./LoginModal/LoginModal";
 import MyQRCode from "./MyQRCode/MyQRCode";
@@ -18,6 +19,7 @@ export default function ModalLayout() {
       <EditProfilePicture />
       <AddMemberLevelModal />
       <MyQRCode />
+      <EditMemberLevelModal />
     </>
   );
 }

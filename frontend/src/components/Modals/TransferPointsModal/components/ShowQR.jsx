@@ -11,6 +11,7 @@ import useAuthStore from "../../../../stores/authStore";
 import {
   formatCurrency,
   getCurrencyInfo,
+  maskMembershipId,
 } from "../../../../utils/GeneralHelper";
 
 export default function ShowQR() {
@@ -22,13 +23,6 @@ export default function ShowQR() {
   );
 
   const currencyInfo = getCurrencyInfo();
-
-  const maskMembershipId = (membershipId) => {
-    if (!membershipId) return "";
-    const visibleDigits = membershipId.slice(-4);
-    const maskedDigits = membershipId.slice(0, -4).replace(/./g, "*");
-    return `${maskedDigits} ${visibleDigits}`;
-  };
 
   const handleTab = (tab) => {
     setActiveTab(tab);

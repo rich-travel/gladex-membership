@@ -11,7 +11,10 @@ const useMembershipLevelStore = create((set) => ({
   addMembershipLevel: async (membershipLevelData) => {
     set({ loading: true, error: null });
     try {
-      const response = await api.post("/api/membership-level/add", membershipLevelData);
+      const response = await api.post(
+        "/api/membership-level/add",
+        membershipLevelData
+      );
       set({ loading: false });
       return response.data;
     } catch (error) {
@@ -48,6 +51,25 @@ const useMembershipLevelStore = create((set) => ({
         error: error.response?.data?.message || error.message,
         loading: false,
       });
+    }
+  },
+
+  // Function to edit a membership level
+  editMembershipLevel: async (id, membershipLevelData) => {
+    set({ loading: true, error: null });
+    try {
+      const response = await api.put(
+        `/api/membership-level/edit/${id}`,
+        membershipLevelData
+      );
+      set({ loading: false });
+      return response.data;
+    } catch (error) {
+      set({
+        error: error.response?.data?.message || error.message,
+        loading: false,
+      });
+      throw error;
     }
   },
 }));

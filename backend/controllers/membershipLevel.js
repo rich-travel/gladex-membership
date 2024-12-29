@@ -86,8 +86,53 @@ const getMembershipLevelById = async (req, res) => {
   }
 };
 
+// Function to edit a membership level by ID
+const editMembershipLevel = async (req, res) => {
+  const { id } = req.params;
+  const {
+    membershipName,
+    membershipLevel,
+    requirementsAmount,
+    benefits,
+    basePoints,
+    transferFee,
+  } = req.body;
+
+  try {
+    // Find the membership level by ID and update the fields
+    const updatedMemberLevel = await MemberLevel.findByIdAndUpdate(
+      id,
+      {
+        membershipName,
+        membershipLevel: Number(membershipLevel),
+        requirementsAmount: Number(requirementsAmount),
+        benefits,
+        basePoints: Number(basePoints),
+        transferFee: Number(transferFee),
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedMemberLevel) {
+      return res.status(404).json({ message: "Membership level not found." });
+    }
+
+    return res.status(200).json({
+      message: "Membership level updated successfully.",
+      updatedMemberLevel,
+    });
+  } catch (error) {
+    console.error("Error updating membership level:", error);
+    return res.status(500).json({
+      message: "Server error. Unable to update membership level.",
+      error,
+    });
+  }
+};
+
 module.exports = {
   addMembershipLevelToUser,
   getAllMembershipLevels,
   getMembershipLevelById,
+  editMembershipLevel,
 };

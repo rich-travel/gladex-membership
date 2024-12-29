@@ -1,7 +1,8 @@
 import { SearchOutlined } from "@ant-design/icons";
-import { Button, Empty, Input, Pagination, Space, Table } from "antd";
+import { Button, Input, Space, Select } from "antd";
 import { useEffect, useRef, useState } from "react";
 import Highlighter from "react-highlight-words";
+import { FaPlusCircle, FaUserPlus } from "react-icons/fa";
 import useAuthStore from "../../stores/authStore";
 import useChangeAdminModalStore from "../../stores/changeAdminModalStore";
 import useMembershipLevelModalStore from "../../stores/membershipLevelModalStore";
@@ -9,10 +10,16 @@ import useMembershipLevelStore from "../../stores/membershipLevelStore";
 import useTransactionModalStore from "../../stores/transactionModalStore";
 import useTransactionPackageStore from "../../stores/transactionPackageStore";
 import useTransferPointsStore from "../../stores/transferPointsStore";
-import { formatCurrency, getCurrencyInfo } from "../../utils/GeneralHelper";
-import { FaUserPlus } from "react-icons/fa";
-import { FaPlusCircle } from "react-icons/fa";
+import { getCurrencyInfo } from "../../utils/GeneralHelper";
 import "./Dashboard.css";
+import Admins from "./component/Admins";
+import Members from "./component/Members";
+import MembershipLevels from "./component/MembershipLevels";
+import Transaction from "./component/Transactions";
+import TransferPoints from "./component/TransferPoints";
+import DashboardLayout from "../../components/DashboardLayout";
+
+const { Option } = Select;
 
 export default function Dashboard() {
   const handleTransactionModal = useTransactionModalStore(
@@ -27,26 +34,16 @@ export default function Dashboard() {
     (state) => state.handleMemberhipLevelModal
   );
 
-  const { packages, fetchAllPackages, loading, error } =
-    useTransactionPackageStore();
-  const {
-    transferHistory,
-    fetchAllTransferHistory,
-    loading: transferLoading,
-    error: transferError,
-  } = useTransferPointsStore();
-  const {
-    membershipLevels,
-    fetchAllMembershipLevels,
-    loading: membershipLoading,
-    error: membershipError,
-  } = useMembershipLevelStore();
-  const { fetchAllUsers, allAdminUsers, allMemberUsers } = useAuthStore();
+  const { fetchAllPackages } = useTransactionPackageStore();
+  const { fetchAllTransferHistory } = useTransferPointsStore();
+  const { fetchAllMembershipLevels } = useMembershipLevelStore();
+  const { fetchAllUsers } = useAuthStore();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const [selectedTab, setSelectedTab] = useState("transactions");
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const searchInput = useRef(null);
 
   useEffect(() => {
@@ -54,6 +51,15 @@ export default function Dashboard() {
     fetchAllTransferHistory();
     fetchAllMembershipLevels();
     fetchAllUsers();
+
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
   }, [
     fetchAllPackages,
     fetchAllTransferHistory,
@@ -179,124 +185,7 @@ export default function Dashboard() {
 
   const currencyInfo = getCurrencyInfo();
 
-  const packageColumns = [
-    {
-      title: "Membership ID",
-      dataIndex: "membershipId",
-      key: "membershipId",
-      ...getColumnSearchProps("membershipId"),
-    },
-    {
-      title: "Full Name",
-      dataIndex: "fullName",
-      key: "fullName",
-      ...getColumnSearchProps("fullName"),
-    },
-    {
-      title: "Package",
-      dataIndex: "packageAvailed",
-      key: "packageAvailed",
-      ...getColumnSearchProps("packageAvailed"),
-    },
-    {
-      title: "Price",
-      dataIndex: "packagePrice",
-      key: "packagePrice",
-      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
-      // ...getColumnSearchProps("packagePrice"),
-    },
-    {
-      title: "Earned Points",
-      dataIndex: "earnPoints",
-      key: "earnPoints",
-      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
-      // ...getColumnSearchProps("earnPoints"),
-    },
-    {
-      title: "Date",
-      dataIndex: "dateCreated",
-      key: "dateCreated",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-  ];
-
-  const transferColumns = [
-    {
-      title: "From Membership ID",
-      dataIndex: "fromMembershipId",
-      key: "fromMembershipId",
-      ...getColumnSearchProps("fromMembershipId"),
-    },
-    {
-      title: "To Membership ID",
-      dataIndex: "toMembershipId",
-      key: "toMembershipId",
-      ...getColumnSearchProps("toMembershipId"),
-    },
-    {
-      title: "Points Transferred",
-      dataIndex: "pointsTransferred",
-      key: "pointsTransferred",
-      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
-      // ...getColumnSearchProps("pointsTransferred"),
-    },
-    {
-      title: "Transfer Fee",
-      dataIndex: "transferFee",
-      key: "transferFee",
-      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
-      // ...getColumnSearchProps("transferFee"),
-    },
-    {
-      title: "Date Transferred",
-      dataIndex: "dateTransferred",
-      key: "dateTransferred",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-  ];
-
-  const membershipColumns = [
-    {
-      title: "Membership Name",
-      dataIndex: "membershipName",
-      key: "membershipName",
-      ...getColumnSearchProps("membershipName"),
-    },
-    {
-      title: "Membership Level",
-      dataIndex: "membershipLevel",
-      key: "membershipLevel",
-      ...getColumnSearchProps("membershipLevel"),
-    },
-    {
-      title: "Requirements Amount",
-      dataIndex: "requirementsAmount",
-      key: "requirementsAmount",
-      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
-      // ...getColumnSearchProps("requirementsAmount"),
-    },
-    {
-      title: "Transfer Fee",
-      dataIndex: "transferFee",
-      key: "transferFee",
-      render: (text) => `${currencyInfo?.symbol}${formatCurrency(text)}`,
-      // ...getColumnSearchProps("transferFee"),
-    },
-    {
-      title: "Benefits",
-      dataIndex: "benefits",
-      key: "benefits",
-      render: (text) => <div dangerouslySetInnerHTML={{ __html: text }} />,
-    },
-    {
-      title: "Date Created",
-      dataIndex: "dateCreated",
-      key: "dateCreated",
-      render: (text) => new Date(text).toLocaleString(),
-    },
-  ];
-
-  const adminColumns = [
+  const memberColumns = [
     {
       title: "Membership ID",
       dataIndex: "membershipId",
@@ -334,65 +223,13 @@ export default function Dashboard() {
     setPageSize(pageSize);
   };
 
-  const sortedPackages = packages
-    ? [...packages]?.sort(
-        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-      )
-    : [];
-
-  const sortedTransferHistory = transferHistory
-    ? [...transferHistory]?.sort(
-        (a, b) => new Date(b.dateTransferred) - new Date(a.dateTransferred)
-      )
-    : [];
-
-  const sortedMembershipLevels = membershipLevels
-    ? [...membershipLevels]?.sort(
-        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-      )
-    : [];
-
-  const sortedAdminUsers = allAdminUsers
-    ? [...allAdminUsers]?.sort(
-        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-      )
-    : [];
-  const sortedMemberUsers = allMemberUsers
-    ? [...allMemberUsers]?.sort(
-        (a, b) => new Date(b.dateCreated) - new Date(a.dateCreated)
-      )
-    : [];
-
-  const paginatedPackages = sortedPackages?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const paginatedTransferHistory = sortedTransferHistory?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const paginatedMembershipLevels = sortedMembershipLevels?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const paginatedAdminUsers = sortedAdminUsers?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
-
-  const paginatedMemberUsers = sortedMemberUsers?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const handleTabChange = (value) => {
+    setSelectedTab(value);
+  };
 
   return (
     <>
-      <h1 className="text-center text-xl md:text-3xl font-bold mt-4">
-        Admin Dashboard
-      </h1>
+      <DashboardLayout title="Dashboard" />
       <div className="section__container-2">
         <div className="flex gap-2 flex-col md:flex-row md:justify-around">
           <button
@@ -417,209 +254,111 @@ export default function Dashboard() {
             <span>Admin</span>
           </button>
         </div>
-        <div className="flex justify-center mt-4">
-          <div className="dashboard-history-container flex justify-around w-full">
-            <button
-              className={`tab-history-dashboard ${
-                selectedTab === "transactions" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("transactions")}
+        <div
+          className={`flex ${
+            windowWidth < 900 ? "justify-start" : "justify-center"
+          } mt-4`}
+        >
+          {windowWidth < 900 ? (
+            <Select
+              defaultValue={selectedTab}
+              onChange={handleTabChange}
+              style={{ width: 200 }}
             >
-              All Transactions
-            </button>
-            <button
-              className={`tab-history-dashboard ${
-                selectedTab === "transfers" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("transfers")}
-            >
-              All Transfer History
-            </button>
-            <button
-              className={`tab-history-dashboard ${
-                selectedTab === "membershipLevels" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("membershipLevels")}
-            >
-              All Membership Levels
-            </button>
-            <button
-              className={`tab-history-dashboard ${
-                selectedTab === "admins" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("admins")}
-            >
-              All Admin Users
-            </button>
-            <button
-              className={`tab-history-dashboard ${
-                selectedTab === "members" ? "active" : ""
-              }`}
-              onClick={() => setSelectedTab("members")}
-            >
-              All Member Users
-            </button>
-          </div>
+              <Option value="transactions">All Transactions</Option>
+              <Option value="transfers">All Transfer History</Option>
+              <Option value="membershipLevels">All Membership Levels</Option>
+              <Option value="admins">All Admin Users</Option>
+              <Option value="members">All Member Users</Option>
+            </Select>
+          ) : (
+            <div className="dashboard-history-container flex justify-around w-full">
+              <button
+                className={`tab-history-dashboard ${
+                  selectedTab === "transactions" ? "active" : ""
+                }`}
+                onClick={() => setSelectedTab("transactions")}
+              >
+                All Transactions
+              </button>
+              <button
+                className={`tab-history-dashboard ${
+                  selectedTab === "transfers" ? "active" : ""
+                }`}
+                onClick={() => setSelectedTab("transfers")}
+              >
+                All Transfer History
+              </button>
+              <button
+                className={`tab-history-dashboard ${
+                  selectedTab === "membershipLevels" ? "active" : ""
+                }`}
+                onClick={() => setSelectedTab("membershipLevels")}
+              >
+                All Membership Levels
+              </button>
+              <button
+                className={`tab-history-dashboard ${
+                  selectedTab === "admins" ? "active" : ""
+                }`}
+                onClick={() => setSelectedTab("admins")}
+              >
+                All Admin Users
+              </button>
+              <button
+                className={`tab-history-dashboard ${
+                  selectedTab === "members" ? "active" : ""
+                }`}
+                onClick={() => setSelectedTab("members")}
+              >
+                All Member Users
+              </button>
+            </div>
+          )}
         </div>
         <div>
           {selectedTab === "transactions" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                All Transactions
-              </h2>
-              {loading && <p>Loading transactions...</p>}
-              {error && <p className="text-red-500">{error}</p>}
-              {!loading &&
-                !error &&
-                (paginatedPackages?.length > 0 ? (
-                  <>
-                    <div className="table-responsive">
-                      <Table
-                        dataSource={paginatedPackages}
-                        columns={packageColumns}
-                        rowKey="_id"
-                        pagination={false}
-                      />
-                    </div>
-                    <Pagination
-                      current={currentPage}
-                      pageSize={pageSize}
-                      total={packages?.length}
-                      onChange={handlePageChange}
-                      showSizeChanger
-                      pageSizeOptions={["10", "20", "50"]}
-                    />
-                  </>
-                ) : (
-                  <Empty description="No Packages Found" />
-                ))}
-            </>
+            <Transaction
+              getColumnSearchProps={getColumnSearchProps}
+              currencyInfo={currencyInfo}
+              handlePageChange={handlePageChange}
+              currentPage={currentPage}
+              pageSize={pageSize}
+            />
           )}
           {selectedTab === "transfers" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                All Transfer History
-              </h2>
-              {transferLoading && <p>Loading transfer history...</p>}
-              {transferError && <p className="text-red-500">{transferError}</p>}
-              {!transferLoading &&
-                !transferError &&
-                (paginatedTransferHistory?.length > 0 ? (
-                  <>
-                    <div className="table-responsive">
-                      <Table
-                        dataSource={paginatedTransferHistory}
-                        columns={transferColumns}
-                        rowKey="_id"
-                        pagination={false}
-                      />
-                    </div>
-                    <Pagination
-                      current={currentPage}
-                      pageSize={pageSize}
-                      total={transferHistory?.length}
-                      onChange={handlePageChange}
-                      showSizeChanger
-                      pageSizeOptions={["10", "20", "50"]}
-                    />
-                  </>
-                ) : (
-                  <Empty description="No Transfer History Found" />
-                ))}
-            </>
+            <TransferPoints
+              getColumnSearchProps={getColumnSearchProps}
+              currencyInfo={currencyInfo}
+              handlePageChange={handlePageChange}
+              currentPage={currentPage}
+              pageSize={pageSize}
+            />
           )}
           {selectedTab === "membershipLevels" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                All Membership Levels
-              </h2>
-              {membershipLoading && <p>Loading membership levels...</p>}
-              {membershipError && (
-                <p className="text-red-500">{membershipError}</p>
-              )}
-              {!membershipLoading &&
-                !membershipError &&
-                (paginatedMembershipLevels?.length > 0 ? (
-                  <>
-                    <div className="table-responsive">
-                      <Table
-                        dataSource={paginatedMembershipLevels}
-                        columns={membershipColumns}
-                        rowKey="_id"
-                        pagination={false}
-                      />
-                    </div>
-                    <Pagination
-                      current={currentPage}
-                      pageSize={pageSize}
-                      total={membershipLevels?.length}
-                      onChange={handlePageChange}
-                      showSizeChanger
-                      pageSizeOptions={["10", "20", "50"]}
-                    />
-                  </>
-                ) : (
-                  <Empty description="No Membership Levels Found" />
-                ))}
-            </>
+            <MembershipLevels
+              getColumnSearchProps={getColumnSearchProps}
+              currencyInfo={currencyInfo}
+              handlePageChange={handlePageChange}
+              currentPage={currentPage}
+              pageSize={pageSize}
+            />
           )}
           {selectedTab === "admins" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                All Admin Users
-              </h2>
-              {allAdminUsers?.length > 0 ? (
-                <>
-                  <div className="table-responsive">
-                    <Table
-                      dataSource={paginatedAdminUsers}
-                      columns={adminColumns}
-                      rowKey="membershipId"
-                      pagination={false}
-                    />
-                  </div>
-                  <Pagination
-                    current={currentPage}
-                    pageSize={pageSize}
-                    total={allAdminUsers?.length}
-                    onChange={handlePageChange}
-                    showSizeChanger
-                    pageSizeOptions={["10", "20", "50"]}
-                  />
-                </>
-              ) : (
-                <Empty description="No Admin Users Found" />
-              )}
-            </>
+            <Admins
+              handlePageChange={handlePageChange}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              memberColumns={memberColumns}
+            />
           )}
           {selectedTab === "members" && (
-            <>
-              <h2 className="text-center text-lg md:text-2xl font-bold my-4">
-                All Member Users
-              </h2>
-              {allMemberUsers?.length > 0 ? (
-                <>
-                  <div className="table-responsive">
-                    <Table
-                      dataSource={paginatedMemberUsers}
-                      columns={adminColumns}
-                      rowKey="membershipId"
-                      pagination={false}
-                    />
-                  </div>
-                  <Pagination
-                    current={currentPage}
-                    pageSize={pageSize}
-                    total={allMemberUsers?.length}
-                    onChange={handlePageChange}
-                    showSizeChanger
-                    pageSizeOptions={["10", "20", "50"]}
-                  />
-                </>
-              ) : (
-                <Empty description="No Admin Users Found" />
-              )}
-            </>
+            <Members
+              handlePageChange={handlePageChange}
+              currentPage={currentPage}
+              pageSize={pageSize}
+              memberColumns={memberColumns}
+            />
           )}
         </div>
       </div>

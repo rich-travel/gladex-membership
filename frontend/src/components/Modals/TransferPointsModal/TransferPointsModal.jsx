@@ -22,7 +22,7 @@ export default function TransferPointsModal() {
     (state) => state.handleTransferPointsModal
   );
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
-  const { transferPoints, loading } = useTransferPointsStore();
+  const { transferPoints } = useTransferPointsStore();
 
   const [activeTab, setActiveTab] = useState(0);
 
@@ -252,7 +252,6 @@ export default function TransferPointsModal() {
                     block
                     type="secondary"
                     htmlType="submit"
-                    loading={loading}
                   >
                     Submit
                   </Button>

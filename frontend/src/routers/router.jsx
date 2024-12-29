@@ -6,6 +6,9 @@ import Home from "../pages/Home/Home";
 import ErrorPage from "../pages/ErrorPage/ErrorPage";
 import Profile from "../pages/Profile/Profile";
 import Dashboard from "../pages/Dashboard/Dashboard";
+import LoyaltyCard from "../pages/LoyaltyCard/LoyaltyCard";
+import PointsHistory from "../pages/Profile/component/PointsHistory";
+import TransferHistory from "../pages/Profile/component/TransferHistory";
 
 const router = createBrowserRouter([
   {
@@ -31,7 +34,19 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
-      }
+      },
+      {
+        path: "/loyalty-card",
+        element: <LoyaltyCard />,
+      },
+      {
+        path: "/points-history",
+        element: <PointsHistory />,
+      },
+      {
+        path: "/transfer-history",
+        element: <TransferHistory />,
+      },
     ],
   },
   {

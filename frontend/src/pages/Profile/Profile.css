@@ -7,7 +7,7 @@
 }
 
 .profile-history-container {
-  background: #DCDBDB;
+  background: #dcdbdb;
   border-radius: 8px;
   margin-top: 10px;
   padding: 10px;
@@ -24,8 +24,8 @@
 }
 
 .tab-history-profile.active {
-  color: var(--primary-color);;
-  border-bottom: 4px solid var(--primary-color);;
+  color: var(--primary-color);
+  border-bottom: 4px solid var(--primary-color);
   font-weight: 900;
 }
 
@@ -35,6 +35,19 @@
 
 .right-section {
   width: 100%;
+}
+
+.points-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.points-card {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 @media screen and (min-width: 768px) {
@@ -51,14 +64,18 @@
   .section__container-2 {
     padding: 10px;
   }
-  
+  .points-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
 @media (max-width: 500px) {
-    .profile-history-container {
-      padding: 5px;
-    }
-    .tab-history-profile {
-        padding: 5px;
-    }
+  .profile-history-container {
+    padding: 5px;
   }
+  .tab-history-profile {
+    padding: 5px;
+  }
+}
