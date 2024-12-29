@@ -8,7 +8,6 @@ import useLoginModalStore from "../stores/loginModalStore";
 import useRegisterModalStore from "../stores/registerModalStore";
 import logo from "../assets/images/nav-logo.png";
 import useMyQrCodeModalStore from "../stores/myQrCodeModalStore";
-import useLoyaltyCardStore from "../stores/loyaltyCardStore";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -18,10 +17,7 @@ export default function Navbar() {
   const handleRegisterModal = useRegisterModalStore(
     (state) => state.handleRegisterModal
   );
-  const loyaltyCard = useLoyaltyCardStore((state) => state.loyaltyCard);
-  const handleLoyaltyCardModal = useLoyaltyCardStore(
-    (state) => state.handleLoyaltyCardModal
-  );
+
   const logout = useAuthStore((state) => state.logout);
   const fetchUserInfo = useAuthStore((state) => state.fetchUserInfo);
 
