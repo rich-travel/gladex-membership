@@ -6,7 +6,7 @@ export default function ProgramBanner() {
           GLADEX MEMBERSHIP LOYALTY PROGRAM
         </h1>
         <h1 className="program-desc mb-4 md:text-2xl">
-          Welcome to the enhanced Gladex Loyalty Membership Program! We've made
+          Welcome to the enhanced Gladex Loyalty Membership Program! We&apos;ve made
           exciting updates to provide you with more flexibility, rewards, and
           exclusive benefits.
         </h1>

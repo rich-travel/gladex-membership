@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Barcode from "react-barcode";
 import { FaCopy } from "react-icons/fa";
 import { PiEyeBold, PiEyeClosedBold } from "react-icons/pi";
 import logo from "../../assets/images/logo.png";
+import DashboardLayout from "../../components/DashboardLayout";
 import useAuthStore from "../../stores/authStore";
 import { copyToClipboard } from "../../utils/GeneralHelper";
 import "./LoyaltyCard.css";
-import DashboardLayout from "../../components/DashboardLayout";
 
 export default function LoyaltyCard() {
   const { userInfo } = useAuthStore();
   const barcodeValue = userInfo?.membershipId;
   const [showMembershipId, setShowMembershipId] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const toggleMembershipIdVisibility = () => {
     setShowMembershipId(!showMembershipId);
@@ -29,16 +30,30 @@ export default function LoyaltyCard() {
     ? formatMembershipId(userInfo.membershipId)
     : "";
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [windowWidth]);
+
   return (
     <>
       <DashboardLayout title="Loyalty Card" />
       <div className="section__container-2">
         <div className="flex flex-col items-center p-4">
           <div className="card-layout shadow-xl relative">
-            <div className="ml-4 text-xl md:text-4xl font-medium">
-              Membership Card
+            <div className="card-text font-bold absolute  pl-4">
+              E-Loyalty Card
             </div>
-            <div className="flex items-center text-xl md:text-4xl font-bold mt-6 ml-4">
+            <div className="card-name font-semibold">
+              {userInfo?.firstName} {userInfo?.lastName}
+            </div>
+            <div className="card-number font-semibold">
               {showMembershipId ? formattedMembershipId : maskedMembershipId}
               <button className="ml-8" onClick={toggleMembershipIdVisibility}>
                 {showMembershipId ? <PiEyeBold /> : <PiEyeClosedBold />}
@@ -48,24 +63,21 @@ export default function LoyaltyCard() {
                   className="ml-2"
                   onClick={() => copyToClipboard(userInfo?.membershipId)}
                 >
-                  <FaCopy className="icon-blue text-lg md:text-3xl" />
+                  <FaCopy className="icon-orange text-lg md:text-3xl" />
                 </button>
               )}
             </div>
             <div>
-              <div className="mt-4 absolute bottom-4 left-4">
+              <div className="barcode">
                 <Barcode
                   value={barcodeValue}
-                  height={40}
+                  height={windowWidth < 900 ? 22 : 40}
                   displayValue={false}
-                  width={3}
+                  width={windowWidth < 900 ? 1.5 : 2}
+                  background="#eeeeee"
                 />
               </div>
-              <img
-                className="h-14 w-16 absolute bottom-4 right-4"
-                src={logo}
-                alt="logo"
-              />
+              <img className="img-logo" src={logo} alt="logo" />
             </div>
           </div>
         </div>

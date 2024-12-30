@@ -41,7 +41,7 @@ export default function Profile() {
       fetchMembershipLevel(userInfo?.membershipId);
     }
   }, [
-    userInfo,
+    userInfo?.membershipId,
     fetchUserPackages,
     fetchUserInfo,
     fetchTransferHistory,
